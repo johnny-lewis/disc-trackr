@@ -1,10 +1,8 @@
 package dev.johnnylewis.disctrackr.presentation.screen
 
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -20,16 +18,15 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
-import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import dev.johnnylewis.disctrackr.R
-import dev.johnnylewis.disctrackr.presentation.theme.AppTheme
+import dev.johnnylewis.disctrackr.presentation.util.LightDarkPreview
+import dev.johnnylewis.disctrackr.presentation.util.PreviewHelper
+import dev.johnnylewis.disctrackr.presentation.util.screenSize
 import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscScreenViewModel
 
 @Composable
-fun DiscScreen(
-  viewModel: DiscScreenViewModel,
-) {
+fun DiscScreen(viewModel: DiscScreenViewModel) {
   val state by viewModel.state.collectAsState()
   DiscScreenContent(
     state = state,
@@ -51,7 +48,8 @@ private fun DiscScreenContent(
       )
     is DiscScreenViewModel.State.Loaded ->
       InitialState()
-    DiscScreenViewModel.State.Error -> TODO()
+    DiscScreenViewModel.State.Error ->
+      ErrorState()
   }
 }
 
@@ -59,8 +57,7 @@ private fun DiscScreenContent(
 private fun InitialState() {
   Box(
     modifier = Modifier
-      .fillMaxSize()
-      .background(MaterialTheme.colorScheme.background),
+      .screenSize(),
     contentAlignment = Alignment.Center,
   ) {
     Column(
@@ -88,9 +85,7 @@ private fun EmptyState(
 ) {
   Box(
     modifier = Modifier
-      .fillMaxSize()
-      .background(MaterialTheme.colorScheme.background)
-      .padding(horizontal = 16.dp),
+      .screenSize(),
     contentAlignment = Alignment.Center,
   ) {
     Column(
@@ -125,20 +120,48 @@ private fun EmptyState(
   }
 }
 
-@Preview
 @Composable
-private fun InitialStatePreview() {
-  AppTheme {
-    InitialState()
+private fun ErrorState() {
+  Box(
+    modifier = Modifier
+      .screenSize(),
+    contentAlignment = Alignment.Center,
+  ) {
+    Column(
+      horizontalAlignment = Alignment.CenterHorizontally,
+      verticalArrangement = Arrangement.spacedBy(12.dp),
+    ) {
+      Text(
+        text = "¯\\_(ツ)_/¯",
+        style = MaterialTheme.typography.displayMedium,
+        color = MaterialTheme.colorScheme.onBackground,
+      )
+      Text(
+        text = stringResource(R.string.disc_screen_error_state_message),
+        style = MaterialTheme.typography.bodyMedium,
+        color = MaterialTheme.colorScheme.onBackground,
+        textAlign = TextAlign.Center,
+      )
+    }
   }
 }
 
-@Preview
+@LightDarkPreview
 @Composable
-private fun EmptyStatePreview() {
-  AppTheme {
-    EmptyState(
-      onAddDiscPressed = {},
-    )
-  }
+private fun InitialStatePreview() = PreviewHelper.Screen {
+  InitialState()
+}
+
+@LightDarkPreview
+@Composable
+private fun EmptyStatePreview() = PreviewHelper.Screen {
+  EmptyState(
+    onAddDiscPressed = {},
+  )
+}
+
+@LightDarkPreview
+@Composable
+private fun ErrorStatePreview() = PreviewHelper.Screen {
+  ErrorState()
 }

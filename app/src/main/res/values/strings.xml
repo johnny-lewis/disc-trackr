@@ -6,4 +6,5 @@
     <string name="disc_screen_empty_state_message_title">Add Discs to Library</string>
     <string name="disc_screen_empty_state_message_body">To start collecting discs, add them to the library by pressing the button below.</string>
     <string name="disc_screen_empty_state_button">Add disc</string>
+    <string name="disc_screen_error_state_message">Looks like something has gone seriously wrong. You may need to restart the app or clear the app data.</string>
 </resources>
