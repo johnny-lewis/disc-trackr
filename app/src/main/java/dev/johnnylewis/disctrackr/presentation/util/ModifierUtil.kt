@@ -7,3 +7,6 @@ import androidx.compose.ui.unit.dp
 
 fun Modifier.screenSize(): Modifier =
   this.fillMaxSize().padding(horizontal = 16.dp)
+
+// For ktlint. Remove once there are more functions in this file
+object ModifierUtil

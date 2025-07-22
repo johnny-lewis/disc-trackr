@@ -18,7 +18,7 @@ object PreviewHelper {
       Scaffold { padding ->
         Box(
           modifier = Modifier
-            .padding(padding)
+            .padding(padding),
         ) {
           content()
         }
