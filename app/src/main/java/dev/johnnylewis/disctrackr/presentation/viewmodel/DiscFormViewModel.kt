@@ -127,7 +127,7 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
   }
 
   sealed interface Event {
-    data object ClearState: Event
+    data object ClearState : Event
     data class NameChanged(val name: String) : Event
     data class FormatChanged(val format: DiscFormat) : Event
     data class RegionSelected(val region: DiscRegion, val selected: Boolean) : Event

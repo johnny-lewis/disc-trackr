@@ -19,9 +19,6 @@ import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.saveable.rememberSaveable
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -41,6 +38,7 @@ fun DiscScreen(viewModel: DiscScreenViewModel) {
   val state by viewModel.state.collectAsState()
   DiscScreenContent(
     state = state,
+    onEvent = viewModel::onEvent,
   )
 }
 
@@ -48,38 +46,30 @@ fun DiscScreen(viewModel: DiscScreenViewModel) {
 @Composable
 private fun DiscScreenContent(
   state: DiscScreenViewModel.State,
+  onEvent: (DiscScreenViewModel.Event) -> Unit,
 ) {
-  // TODO: Move these to viewmodel
-  var isSheetExpanded by rememberSaveable { mutableStateOf(false) }
-  var shouldClearFormState by rememberSaveable { mutableStateOf(false) }
-
-  when (state) {
-    DiscScreenViewModel.State.Initial ->
+  when (state.subState) {
+    DiscScreenViewModel.State.SubState.Initial ->
       InitialState()
-    DiscScreenViewModel.State.Empty ->
+    DiscScreenViewModel.State.SubState.Empty ->
       EmptyState(
-        onAddDiscPressed = {
-          isSheetExpanded = true
-        },
+        onEvent = onEvent,
       )
-    is DiscScreenViewModel.State.Loaded ->
+    DiscScreenViewModel.State.SubState.Loaded ->
       InitialState()
-    DiscScreenViewModel.State.Error ->
+    DiscScreenViewModel.State.SubState.Error ->
       ErrorState()
   }
 
   BottomSheet(
-    isSheetExpanded = isSheetExpanded,
-    shouldClearState = shouldClearFormState,
-    onStateCleared = { shouldClearFormState = false },
+    isSheetExpanded = state.isDiscFormExpanded,
+    shouldClearState = state.shouldClearDiscFormState,
+    onStateCleared = { onEvent(DiscScreenViewModel.Event.DiscFormStateCleared) },
     onDismiss = {
-      isSheetExpanded = false
-      shouldClearFormState = true
+      onEvent(DiscScreenViewModel.Event.DiscFormExpandedChanged(isExpanded = false))
     },
     onSubmit = { result ->
-      println("++++ $result")
-      isSheetExpanded = false
-      shouldClearFormState = true
+      onEvent(DiscScreenViewModel.Event.DiscFormSubmitted(result))
     },
   )
 }
@@ -112,7 +102,7 @@ private fun InitialState() {
 
 @Composable
 private fun EmptyState(
-  onAddDiscPressed: () -> Unit,
+  onEvent: (DiscScreenViewModel.Event) -> Unit,
 ) {
   Box(
     modifier = Modifier
@@ -138,7 +128,9 @@ private fun EmptyState(
         modifier = Modifier
           .padding(top = 8.dp),
         shape = RoundedCornerShape(6.dp),
-        onClick = onAddDiscPressed,
+        onClick = {
+          onEvent(DiscScreenViewModel.Event.DiscFormExpandedChanged(isExpanded = true))
+        },
       ) {
         Text(
           text = stringResource(R.string.disc_screen_empty_state_button),
@@ -212,7 +204,7 @@ private fun BottomSheet(
 @Composable
 private fun EmptyStatePreview() = PreviewHelper.Screen {
   EmptyState(
-    onAddDiscPressed = {},
+    onEvent = {},
   )
 }
 

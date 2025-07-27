@@ -145,7 +145,7 @@ private fun DiscFormContent(
       label = { Text(stringResource(R.string.disc_screen_form_distributor)) },
       keyboardOptions = KeyboardOptions(
         capitalization = KeyboardCapitalization.Words,
-      )
+      ),
     )
     TextField(
       modifier = Modifier

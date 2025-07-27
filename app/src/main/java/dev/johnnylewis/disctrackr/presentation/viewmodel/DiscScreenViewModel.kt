@@ -7,6 +7,7 @@ import com.github.michaelbull.result.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.johnnylewis.disctrackr.domain.model.Disc
 import dev.johnnylewis.disctrackr.domain.repository.DatabaseRepositoryContract
+import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -17,7 +18,7 @@ import javax.inject.Inject
 class DiscScreenViewModel @Inject constructor(
   private val discRepository: DatabaseRepositoryContract,
 ) : ViewModel() {
-  private val _state = MutableStateFlow<State>(State.Initial)
+  private val _state = MutableStateFlow<State>(State())
   val state = _state.asStateFlow()
 
   init {
@@ -25,31 +26,71 @@ class DiscScreenViewModel @Inject constructor(
       .onSuccess { discsFlow ->
         viewModelScope.launch {
           discsFlow.collect { discs ->
-            if (discs.isEmpty()) {
-              _state.value = State.Empty
-            } else {
-              _state.value = State.Loaded(discs)
-            }
+            _state.value = _state.value.copy(
+              subState = if (discs.isEmpty()) {
+                State.SubState.Empty
+              } else {
+                State.SubState.Loaded
+              },
+              discs = discs,
+            )
           }
         }
       }.onFailure {
-        _state.value = State.Error
+        _state.value = _state.value.copy(
+          subState = State.SubState.Error,
+        )
       }
+  }
+
+  fun onEvent(event: Event) {
+    when (event) {
+      is Event.DiscFormExpandedChanged ->
+        onDiscFormExpandedChanged(isExpanded = event.isExpanded)
+      Event.DiscFormStateCleared -> onDiscFormStateCleared()
+      is Event.DiscFormSubmitted -> onDiscFormSubmitted(event.result)
+    }
+  }
+
+  private fun onDiscFormExpandedChanged(isExpanded: Boolean) {
+    _state.value = _state.value.copy(
+      isDiscFormExpanded = isExpanded,
+      shouldClearDiscFormState = if (!isExpanded) true else _state.value.shouldClearDiscFormState,
+    )
+  }
+
+  private fun onDiscFormStateCleared() {
+    _state.value = _state.value.copy(
+      shouldClearDiscFormState = false,
+    )
+  }
+
+  private fun onDiscFormSubmitted(result: DiscFormResult) {
+    println("++++ SUBMIT: $result")
+    onDiscFormExpandedChanged(isExpanded = false)
   }
 
   fun onAddDiscPressed() {
     Timber.i("++++ ON DISC PRESSED")
   }
 
-  sealed interface State {
-    data object Initial : State
+  data class State(
+    val subState: SubState = SubState.Initial,
+    val discs: List<Disc> = emptyList(),
+    val isDiscFormExpanded: Boolean = false,
+    val shouldClearDiscFormState: Boolean = false,
+  ) {
+    enum class SubState {
+      Initial,
+      Empty,
+      Loaded,
+      Error,
+    }
+  }
 
-    data object Empty : State
-
-    data class Loaded(
-      val discs: List<Disc>,
-    ) : State
-
-    data object Error : State
+  sealed interface Event {
+    data class DiscFormExpandedChanged(val isExpanded: Boolean) : Event
+    data object DiscFormStateCleared : Event
+    data class DiscFormSubmitted(val result: DiscFormResult) : Event
   }
 }
