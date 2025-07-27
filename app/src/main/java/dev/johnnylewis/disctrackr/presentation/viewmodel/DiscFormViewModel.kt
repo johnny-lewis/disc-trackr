@@ -41,15 +41,21 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
 
   fun onEvent(event: Event) {
     when (event) {
+      Event.ClearState -> onClearState()
       is Event.NameChanged -> onNameChanged(event.name)
       is Event.FormatChanged -> onFormatChanged(event.format)
       is Event.RegionSelected -> onRegionSelected(event.region, event.selected)
+      is Event.DistributorChanged -> onDistributorChanged(event.distributor)
       is Event.BlurayIdChanged -> onBlurayIdChanged(event.id)
       is Event.CountrySelected -> onCountrySelected(event.country)
       Event.CountryCleared -> onCountryCleared()
       Event.CountryFilterCleared -> onCountryFilterCleared()
       is Event.CountryFilterChanged -> onCountryFilterChanged(event.filter)
     }
+  }
+
+  private fun onClearState() {
+    _state.value = State()
   }
 
   private fun onCountryFilterChanged(filter: String) {
@@ -88,6 +94,10 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
     )
   }
 
+  private fun onDistributorChanged(distributor: String) {
+    _state.value = _state.value.copy(distributor = distributor)
+  }
+
   private fun onBlurayIdChanged(id: String) {
     _state.value = _state.value.copy(blurayId = id)
   }
@@ -99,6 +109,7 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
     val name: String = "",
     val format: DiscFormat = DiscFormat.BLU_RAY,
     val regions: Set<DiscRegion> = emptySet(),
+    val distributor: String = "",
     val blurayId: String = "",
   ) {
     val isFormValid: Boolean =
@@ -110,14 +121,17 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
         regions = regions.toList(),
         format = format,
         country = selectedCountry,
+        distributor = distributor,
         blurayId = blurayId,
       )
   }
 
   sealed interface Event {
+    data object ClearState: Event
     data class NameChanged(val name: String) : Event
     data class FormatChanged(val format: DiscFormat) : Event
     data class RegionSelected(val region: DiscRegion, val selected: Boolean) : Event
+    data class DistributorChanged(val distributor: String) : Event
     data class BlurayIdChanged(val id: String) : Event
     data class CountrySelected(val country: Country) : Event
     data object CountryCleared : Event

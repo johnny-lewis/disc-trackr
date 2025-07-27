@@ -15,6 +15,7 @@ fun DiscEntity.mapToDisc(): Disc =
     imageUrl = imageUrl,
     format = format.toDiscFormat(region),
     countryCode = countryCode?.toCountryCode(),
+    distributor = distributor,
     blurayId = blurayId,
   )
 
@@ -27,6 +28,7 @@ fun Disc.mapToDiscEntity(): DiscEntity =
       format = format,
       region = region,
       countryCode = countryCode?.name,
+      distributor = distributor,
       blurayId = blurayId,
     )
   }

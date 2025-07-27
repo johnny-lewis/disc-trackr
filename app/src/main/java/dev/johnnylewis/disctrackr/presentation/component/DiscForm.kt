@@ -14,6 +14,7 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -25,6 +26,7 @@ import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -37,6 +39,7 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.KeyboardCapitalization
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.johnnylewis.disctrackr.R
@@ -54,8 +57,17 @@ import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscFormViewModel
 fun DiscForm(
   modifier: Modifier = Modifier,
   viewModel: DiscFormViewModel = viewModel(),
+  shouldClearState: Boolean,
+  onStateCleared: () -> Unit,
   onSubmit: (DiscFormResult) -> Unit,
 ) {
+  LaunchedEffect(shouldClearState) {
+    if (shouldClearState) {
+      viewModel.onEvent(DiscFormViewModel.Event.ClearState)
+      onStateCleared()
+    }
+  }
+
   val state by viewModel.state.collectAsState()
   DiscFormContent(
     modifier = modifier,
@@ -85,6 +97,9 @@ private fun DiscFormContent(
       value = state.name,
       onValueChange = { onEvent(DiscFormViewModel.Event.NameChanged(it)) },
       label = { Text(stringResource(R.string.disc_screen_form_name)) },
+      keyboardOptions = KeyboardOptions(
+        capitalization = KeyboardCapitalization.Words,
+      ),
     )
     DropdownText(
       modifier = Modifier
@@ -121,6 +136,16 @@ private fun DiscFormContent(
       selectedCountry = state.selectedCountry,
       onClick = { isCountrySheetExpanded = true },
       onClear = { onEvent(DiscFormViewModel.Event.CountryCleared) },
+    )
+    TextField(
+      modifier = Modifier
+        .fillMaxWidth(),
+      value = state.distributor,
+      onValueChange = { onEvent(DiscFormViewModel.Event.DistributorChanged(it)) },
+      label = { Text(stringResource(R.string.disc_screen_form_distributor)) },
+      keyboardOptions = KeyboardOptions(
+        capitalization = KeyboardCapitalization.Words,
+      )
     )
     TextField(
       modifier = Modifier

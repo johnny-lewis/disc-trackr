@@ -8,5 +8,6 @@ data class Disc(
   val imageUrl: String,
   val format: DiscFormat,
   val countryCode: Locale.IsoCountryCode?,
+  val distributor: String?,
   val blurayId: String?,
 )

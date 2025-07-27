@@ -41,7 +41,6 @@ fun DiscScreen(viewModel: DiscScreenViewModel) {
   val state by viewModel.state.collectAsState()
   DiscScreenContent(
     state = state,
-    onAddDiscPressed = viewModel::onAddDiscPressed,
   )
 }
 
@@ -49,9 +48,10 @@ fun DiscScreen(viewModel: DiscScreenViewModel) {
 @Composable
 private fun DiscScreenContent(
   state: DiscScreenViewModel.State,
-  onAddDiscPressed: () -> Unit,
 ) {
+  // TODO: Move these to viewmodel
   var isSheetExpanded by rememberSaveable { mutableStateOf(false) }
+  var shouldClearFormState by rememberSaveable { mutableStateOf(false) }
 
   when (state) {
     DiscScreenViewModel.State.Initial ->
@@ -70,10 +70,16 @@ private fun DiscScreenContent(
 
   BottomSheet(
     isSheetExpanded = isSheetExpanded,
-    onDismiss = { isSheetExpanded = false },
+    shouldClearState = shouldClearFormState,
+    onStateCleared = { shouldClearFormState = false },
+    onDismiss = {
+      isSheetExpanded = false
+      shouldClearFormState = true
+    },
     onSubmit = { result ->
       println("++++ $result")
       isSheetExpanded = false
+      shouldClearFormState = true
     },
   )
 }
@@ -175,6 +181,8 @@ private fun ErrorState() {
 @Composable
 private fun BottomSheet(
   isSheetExpanded: Boolean,
+  shouldClearState: Boolean,
+  onStateCleared: () -> Unit,
   onDismiss: () -> Unit,
   onSubmit: (DiscFormResult) -> Unit,
 ) {
@@ -193,6 +201,8 @@ private fun BottomSheet(
       modifier = Modifier
         .fillMaxWidth()
         .fillMaxHeight(0.95f),
+      shouldClearState = shouldClearState,
+      onStateCleared = onStateCleared,
       onSubmit = onSubmit,
     )
   }
