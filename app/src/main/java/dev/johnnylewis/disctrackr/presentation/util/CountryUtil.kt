@@ -27,4 +27,7 @@ object CountryUtil {
     isoCode.map { char ->
       String(Character.toChars(char.code - ASCII_UPPERCASE_A + REGIONAL_BASE_CODE_POINT))
     }.joinToString(separator = "")
+
+  fun getCountryFromCode(code: String): Country =
+    countryList.first { it.code == code }
 }

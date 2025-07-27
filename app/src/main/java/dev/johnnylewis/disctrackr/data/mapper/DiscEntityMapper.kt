@@ -3,7 +3,6 @@ package dev.johnnylewis.disctrackr.data.mapper
 import dev.johnnylewis.disctrackr.data.database.entity.DiscEntity
 import dev.johnnylewis.disctrackr.domain.model.Disc
 import dev.johnnylewis.disctrackr.domain.model.DiscFormat
-import java.util.Locale
 
 fun List<DiscEntity>.mapToDisc(): List<Disc> =
   map(DiscEntity::mapToDisc)
@@ -14,7 +13,7 @@ fun DiscEntity.mapToDisc(): Disc =
     title = title,
     imageUrl = imageUrl,
     format = format.toDiscFormat(region),
-    countryCode = countryCode?.toCountryCode(),
+    countryCode = countryCode,
     distributor = distributor,
     blurayId = blurayId,
   )
@@ -27,7 +26,7 @@ fun Disc.mapToDiscEntity(): DiscEntity =
       imageUrl = imageUrl,
       format = format,
       region = region,
-      countryCode = countryCode?.name,
+      countryCode = countryCode,
       distributor = distributor,
       blurayId = blurayId,
     )
@@ -66,9 +65,6 @@ private fun String?.toBluRayRegions(): List<DiscFormat.BluRay.Region> =
       regions
     }
   } ?: emptyList()
-
-private fun String.toCountryCode(): Locale.IsoCountryCode? =
-  Locale.IsoCountryCode.entries.firstOrNull { it.name == this }
 
 private fun DiscFormat.toEntity(): Pair<String, String?> =
   when (this) {

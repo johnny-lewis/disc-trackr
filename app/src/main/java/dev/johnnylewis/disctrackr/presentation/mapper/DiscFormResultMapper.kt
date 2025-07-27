@@ -1,24 +1,22 @@
 package dev.johnnylewis.disctrackr.presentation.mapper
 
 import dev.johnnylewis.disctrackr.domain.model.Disc
-import dev.johnnylewis.disctrackr.presentation.model.Country
 import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
 import dev.johnnylewis.disctrackr.presentation.model.DiscRegion
-import java.util.Locale
 import dev.johnnylewis.disctrackr.domain.model.DiscFormat as DomainDiscFormat
 import dev.johnnylewis.disctrackr.presentation.model.DiscFormat as PresentationDiscFormat
 
 fun DiscFormResult.mapToDisc(): Disc =
   Disc(
     id = null,
-    title = title,
+    title = title.trim(),
     imageUrl = null,
     format = format.mapToDomain(
       regions = regions,
     ),
-    countryCode = country?.mapToLocalIsoCode(),
-    distributor = distributor,
-    blurayId = blurayId,
+    countryCode = country?.code,
+    distributor = distributor.trim(),
+    blurayId = blurayId.trim(),
   )
 
 private fun PresentationDiscFormat.mapToDomain(regions: List<DiscRegion>): DomainDiscFormat =
@@ -55,6 +53,3 @@ private fun DiscRegion.mapToBluRayRegion(): DomainDiscFormat.BluRay.Region? =
     DiscRegion.C -> DomainDiscFormat.BluRay.Region.C
     else -> null
   }
-
-private fun Country.mapToLocalIsoCode(): Locale.IsoCountryCode =
-  Locale.IsoCountryCode.valueOf(this.code)
