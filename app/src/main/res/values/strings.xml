@@ -7,4 +7,28 @@
     <string name="disc_screen_empty_state_message_body">To start collecting discs, add them to the library by pressing the button below.</string>
     <string name="disc_screen_empty_state_button">Add disc</string>
     <string name="disc_screen_error_state_message">Looks like something has gone seriously wrong. You may need to restart the app or clear the app data.</string>
+
+    <!-- Disc Form -->
+    <string name="disc_screen_form_name">Name</string>
+    <string name="disc_screen_form_format_DVD">DVD</string>
+    <string name="disc_screen_form_format_Blu_Ray">Blu-ray</string>
+    <string name="disc_screen_form_format_UHD">4K UHD</string>
+    <string name="disc_screen_form_regions_title">Regions:</string>
+    <string name="disc_screen_form_region_zero">0</string>
+    <string name="disc_screen_form_region_one">1</string>
+    <string name="disc_screen_form_region_two">2</string>
+    <string name="disc_screen_form_region_three">3</string>
+    <string name="disc_screen_form_region_four">4</string>
+    <string name="disc_screen_form_region_five">5</string>
+    <string name="disc_screen_form_region_six">6</string>
+    <string name="disc_screen_form_region_seven">7</string>
+    <string name="disc_screen_form_region_eight">8</string>
+    <string name="disc_screen_form_region_a">A</string>
+    <string name="disc_screen_form_region_b">B</string>
+    <string name="disc_screen_form_region_c">C</string>
+    <string name="disc_screen_form_region_all">All</string>
+    <string name="disc_screen_form_country_placeholder">Country of Origin</string>
+    <string name="disc_screen_form_country_search_placeholder">Country Name</string>
+    <string name="disc_screen_form_bluray_id">Blu-ray.com ID</string>
+    <string name="disc_screen_form_save">Save</string>
 </resources>

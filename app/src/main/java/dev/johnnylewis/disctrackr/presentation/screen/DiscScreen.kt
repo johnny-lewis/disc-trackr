@@ -3,16 +3,25 @@ package dev.johnnylewis.disctrackr.presentation.screen
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
@@ -20,6 +29,8 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.johnnylewis.disctrackr.R
+import dev.johnnylewis.disctrackr.presentation.component.DiscForm
+import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
 import dev.johnnylewis.disctrackr.presentation.util.LightDarkPreview
 import dev.johnnylewis.disctrackr.presentation.util.PreviewHelper
 import dev.johnnylewis.disctrackr.presentation.util.screenSize
@@ -34,23 +45,37 @@ fun DiscScreen(viewModel: DiscScreenViewModel) {
   )
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun DiscScreenContent(
   state: DiscScreenViewModel.State,
   onAddDiscPressed: () -> Unit,
 ) {
+  var isSheetExpanded by rememberSaveable { mutableStateOf(false) }
+
   when (state) {
     DiscScreenViewModel.State.Initial ->
       InitialState()
     DiscScreenViewModel.State.Empty ->
       EmptyState(
-        onAddDiscPressed = onAddDiscPressed,
+        onAddDiscPressed = {
+          isSheetExpanded = true
+        },
       )
     is DiscScreenViewModel.State.Loaded ->
       InitialState()
     DiscScreenViewModel.State.Error ->
       ErrorState()
   }
+
+  BottomSheet(
+    isSheetExpanded = isSheetExpanded,
+    onDismiss = { isSheetExpanded = false },
+    onSubmit = { result ->
+      println("++++ $result")
+      isSheetExpanded = false
+    },
+  )
 }
 
 @Composable
@@ -146,10 +171,31 @@ private fun ErrorState() {
   }
 }
 
-@LightDarkPreview
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun InitialStatePreview() = PreviewHelper.Screen {
-  InitialState()
+private fun BottomSheet(
+  isSheetExpanded: Boolean,
+  onDismiss: () -> Unit,
+  onSubmit: (DiscFormResult) -> Unit,
+) {
+  if (!isSheetExpanded) {
+    return
+  }
+  ModalBottomSheet(
+    modifier = Modifier
+      .systemBarsPadding(),
+    onDismissRequest = onDismiss,
+    sheetState = rememberModalBottomSheetState(
+      skipPartiallyExpanded = true,
+    ),
+  ) {
+    DiscForm(
+      modifier = Modifier
+        .fillMaxWidth()
+        .fillMaxHeight(0.95f),
+      onSubmit = onSubmit,
+    )
+  }
 }
 
 @LightDarkPreview
@@ -158,6 +204,12 @@ private fun EmptyStatePreview() = PreviewHelper.Screen {
   EmptyState(
     onAddDiscPressed = {},
   )
+}
+
+@LightDarkPreview
+@Composable
+private fun InitialStatePreview() = PreviewHelper.Screen {
+  InitialState()
 }
 
 @LightDarkPreview
