@@ -69,8 +69,6 @@ private fun DiscRegion.getTitle(): String =
     DiscRegion.Four -> stringResource(R.string.disc_screen_form_region_four)
     DiscRegion.Five -> stringResource(R.string.disc_screen_form_region_five)
     DiscRegion.Six -> stringResource(R.string.disc_screen_form_region_six)
-    DiscRegion.Seven -> stringResource(R.string.disc_screen_form_region_seven)
-    DiscRegion.Eight -> stringResource(R.string.disc_screen_form_region_eight)
     DiscRegion.A -> stringResource(R.string.disc_screen_form_region_a)
     DiscRegion.B -> stringResource(R.string.disc_screen_form_region_b)
     DiscRegion.C -> stringResource(R.string.disc_screen_form_region_c)

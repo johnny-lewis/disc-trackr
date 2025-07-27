@@ -8,8 +8,6 @@ enum class DiscRegion(val format: DiscFormat) {
   Four(DiscFormat.DVD),
   Five(DiscFormat.DVD),
   Six(DiscFormat.DVD),
-  Seven(DiscFormat.DVD),
-  Eight(DiscFormat.DVD),
   A(DiscFormat.BLU_RAY),
   B(DiscFormat.BLU_RAY),
   C(DiscFormat.BLU_RAY),

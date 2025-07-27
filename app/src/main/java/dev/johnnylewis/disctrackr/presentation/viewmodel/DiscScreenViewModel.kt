@@ -7,11 +7,11 @@ import com.github.michaelbull.result.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.johnnylewis.disctrackr.domain.model.Disc
 import dev.johnnylewis.disctrackr.domain.repository.DatabaseRepositoryContract
+import dev.johnnylewis.disctrackr.presentation.mapper.mapToDisc
 import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
-import timber.log.Timber
 import javax.inject.Inject
 
 @HiltViewModel
@@ -45,8 +45,7 @@ class DiscScreenViewModel @Inject constructor(
 
   fun onEvent(event: Event) {
     when (event) {
-      is Event.DiscFormExpandedChanged ->
-        onDiscFormExpandedChanged(isExpanded = event.isExpanded)
+      is Event.DiscFormExpandedChanged -> onDiscFormExpandedChanged(event.isExpanded)
       Event.DiscFormStateCleared -> onDiscFormStateCleared()
       is Event.DiscFormSubmitted -> onDiscFormSubmitted(event.result)
     }
@@ -66,12 +65,10 @@ class DiscScreenViewModel @Inject constructor(
   }
 
   private fun onDiscFormSubmitted(result: DiscFormResult) {
-    println("++++ SUBMIT: $result")
     onDiscFormExpandedChanged(isExpanded = false)
-  }
-
-  fun onAddDiscPressed() {
-    Timber.i("++++ ON DISC PRESSED")
+    viewModelScope.launch {
+      discRepository.addDisc(result.mapToDisc())
+    }
   }
 
   data class State(
