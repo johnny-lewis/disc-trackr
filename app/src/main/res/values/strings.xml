@@ -29,6 +29,7 @@
     <string name="disc_screen_form_country_placeholder">Country of Origin</string>
     <string name="disc_screen_form_country_search_placeholder">Country Name</string>
     <string name="disc_screen_form_distributor">Distributor</string>
+    <string name="disc_screen_form_year">Year of Distribution</string>
     <string name="disc_screen_form_bluray_id">Blu-ray.com ID</string>
     <string name="disc_screen_form_save">Save</string>
 </resources>

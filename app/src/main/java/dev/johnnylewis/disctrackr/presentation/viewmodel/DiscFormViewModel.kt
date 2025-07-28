@@ -8,6 +8,7 @@ import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
 import dev.johnnylewis.disctrackr.presentation.model.DiscFormat
 import dev.johnnylewis.disctrackr.presentation.model.DiscRegion
 import dev.johnnylewis.disctrackr.presentation.util.CountryUtil
+import dev.johnnylewis.disctrackr.presentation.util.hasRegions
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -46,6 +47,7 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
       is Event.FormatChanged -> onFormatChanged(event.format)
       is Event.RegionSelected -> onRegionSelected(event.region, event.selected)
       is Event.DistributorChanged -> onDistributorChanged(event.distributor)
+      is Event.YearChanged -> onYearChanged(event.year)
       is Event.BlurayIdChanged -> onBlurayIdChanged(event.id)
       is Event.CountrySelected -> onCountrySelected(event.country)
       Event.CountryCleared -> onCountryCleared()
@@ -98,6 +100,10 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
     _state.value = _state.value.copy(distributor = distributor)
   }
 
+  private fun onYearChanged(year: String) {
+    _state.value = _state.value.copy(year = year)
+  }
+
   private fun onBlurayIdChanged(id: String) {
     _state.value = _state.value.copy(blurayId = id)
   }
@@ -110,10 +116,11 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
     val format: DiscFormat = DiscFormat.BLU_RAY,
     val regions: Set<DiscRegion> = emptySet(),
     val distributor: String = "",
+    val year: String = "",
     val blurayId: String = "",
   ) {
     val isFormValid: Boolean =
-      name.isNotBlank() && regions.isNotEmpty()
+      name.isNotBlank() && (regions.isNotEmpty() || !format.hasRegions())
 
     fun mapToResult(): DiscFormResult =
       DiscFormResult(
@@ -122,6 +129,7 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
         format = format,
         country = selectedCountry,
         distributor = distributor,
+        year = year,
         blurayId = blurayId,
       )
   }
@@ -132,6 +140,7 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
     data class FormatChanged(val format: DiscFormat) : Event
     data class RegionSelected(val region: DiscRegion, val selected: Boolean) : Event
     data class DistributorChanged(val distributor: String) : Event
+    data class YearChanged(val year: String) : Event
     data class BlurayIdChanged(val id: String) : Event
     data class CountrySelected(val country: Country) : Event
     data object CountryCleared : Event

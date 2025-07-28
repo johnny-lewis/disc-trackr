@@ -20,6 +20,7 @@ fun Disc.mapToPresentation(): DiscItem =
       regions = regions,
       country = countryCode?.let(CountryUtil::getCountryFromCode),
       distributor = distributor,
+      year = year,
       blurayId = blurayId,
     )
   }

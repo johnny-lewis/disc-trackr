@@ -22,6 +22,7 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import coil3.compose.AsyncImagePainter
 import coil3.compose.SubcomposeAsyncImage
@@ -49,6 +50,7 @@ fun DiscListItem(
         text = discItem.title,
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
+        fontWeight = FontWeight.SemiBold,
       )
       if (discItem.distributor.isNotBlank()) {
         Text(
@@ -119,5 +121,5 @@ private fun DiscImage(
 }
 
 private fun DiscItem.getBottomText(): String =
-  listOfNotNull(country?.name, 2025.toString())
+  listOfNotNull(country?.name, year?.toString())
     .joinToString(" / ")

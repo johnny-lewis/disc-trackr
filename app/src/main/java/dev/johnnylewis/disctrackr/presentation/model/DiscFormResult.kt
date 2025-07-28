@@ -6,5 +6,6 @@ data class DiscFormResult(
   val regions: List<DiscRegion>,
   val country: Country?,
   val distributor: String,
+  val year: String,
   val blurayId: String,
 )

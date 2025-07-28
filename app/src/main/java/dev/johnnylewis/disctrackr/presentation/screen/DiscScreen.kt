@@ -1,5 +1,6 @@
 package dev.johnnylewis.disctrackr.presentation.screen
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -7,6 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
@@ -94,19 +96,19 @@ private fun LoadedState(
     modifier = Modifier
       .fillMaxSize()
       .padding(horizontal = 16.dp),
-    verticalArrangement = Arrangement.spacedBy(8.dp),
   ) {
     item {
       Row(
         modifier = Modifier
+          .padding(vertical = 8.dp)
           .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
       ) {
         Text(
           modifier = Modifier
             .weight(1f),
-          text = stringResource(R.string.disc_screen_title),
-          style = MaterialTheme.typography.titleMedium,
+          text = stringResource(R.string.disc_screen_title).lowercase(),
+          style = MaterialTheme.typography.headlineMedium,
           color = MaterialTheme.colorScheme.onBackground,
           fontWeight = FontWeight.SemiBold,
         )
@@ -122,8 +124,19 @@ private fun LoadedState(
         }
       }
     }
-    items(state.discs) { disc ->
-      DiscListItem(disc)
+    items(state.discs.size) { index ->
+      Column {
+        DiscListItem(discItem = state.discs[index])
+        if (index != state.discs.size - 1) {
+          Box(
+            modifier = Modifier
+              .padding(8.dp)
+              .fillMaxWidth()
+              .height((0.5).dp)
+              .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f)),
+          )
+        }
+      }
     }
   }
 }

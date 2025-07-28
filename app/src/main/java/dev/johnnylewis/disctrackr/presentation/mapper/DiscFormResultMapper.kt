@@ -18,6 +18,7 @@ fun DiscFormResult.mapToDisc(): Disc =
     ),
     countryCode = country?.code,
     distributor = distributor.trim(),
+    year = year.toIntOrNull(),
     blurayId = blurayId.trim(),
   )
 

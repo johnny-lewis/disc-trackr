@@ -16,6 +16,7 @@ import androidx.compose.ui.unit.dp
 import dev.johnnylewis.disctrackr.R
 import dev.johnnylewis.disctrackr.presentation.model.DiscFormat
 import dev.johnnylewis.disctrackr.presentation.model.DiscRegion
+import dev.johnnylewis.disctrackr.presentation.util.hasRegions
 
 @Composable
 fun DiscRegionSelect(
@@ -24,6 +25,9 @@ fun DiscRegionSelect(
   selectedRegions: Set<DiscRegion>,
   onRegionSelected: (DiscRegion, Boolean) -> Unit,
 ) {
+  if (!selectedFormat.hasRegions()) {
+    return
+  }
   Column(
     modifier = modifier,
     verticalArrangement = Arrangement.spacedBy(4.dp),

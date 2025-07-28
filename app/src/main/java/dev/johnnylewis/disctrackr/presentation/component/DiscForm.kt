@@ -151,6 +151,16 @@ private fun DiscFormContent(
     TextField(
       modifier = Modifier
         .fillMaxWidth(),
+      value = state.year,
+      onValueChange = { onEvent(DiscFormViewModel.Event.YearChanged(it)) },
+      label = { Text(stringResource(R.string.disc_screen_form_year)) },
+      keyboardOptions = KeyboardOptions(
+        keyboardType = KeyboardType.Number,
+      ),
+    )
+    TextField(
+      modifier = Modifier
+        .fillMaxWidth(),
       value = state.blurayId,
       onValueChange = { onEvent(DiscFormViewModel.Event.BlurayIdChanged(it)) },
       label = { Text(stringResource(R.string.disc_screen_form_bluray_id)) },
