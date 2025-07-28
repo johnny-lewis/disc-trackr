@@ -1,13 +1,20 @@
 package dev.johnnylewis.disctrackr.presentation.component
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.snapping.SnapPosition
+import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.lazy.LazyRow
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
@@ -16,10 +23,16 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.layout.onSizeChanged
+import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontStyle
 import androidx.compose.ui.text.font.FontWeight
@@ -30,14 +43,111 @@ import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
 import dev.johnnylewis.disctrackr.R
 import dev.johnnylewis.disctrackr.presentation.model.DiscItem
+import dev.johnnylewis.disctrackr.presentation.util.noRippleClickable
+import kotlinx.coroutines.launch
 
 @Composable
 fun DiscListItem(
   discItem: DiscItem,
+  onDeletedClicked: () -> Unit,
+) {
+  // TODO: Unswipe if another item has been swiped
+  Box {
+    BehindButtonRow(
+      modifier = Modifier
+        .matchParentSize(),
+    )
+    val listState = rememberLazyListState()
+    val flingBehavior = rememberSnapFlingBehavior(
+      lazyListState = listState,
+      snapPosition = SnapPosition.End,
+    )
+    val scope = rememberCoroutineScope()
+    var itemHeight by remember { mutableIntStateOf(0) }
+    LazyRow(
+      modifier = Modifier
+        .fillMaxWidth(),
+      state = listState,
+      flingBehavior = flingBehavior,
+    ) {
+      item {
+        DiscRow(
+          modifier = Modifier
+            .fillParentMaxWidth()
+            .onSizeChanged { itemHeight = it.height },
+          discItem = discItem,
+        )
+      }
+      item {
+        Box(
+          modifier = Modifier
+            .fillParentMaxWidth(0.3f)
+            .height(with(LocalDensity.current) { itemHeight.toDp() })
+            .noRippleClickable {
+              scope.launch {
+                listState.animateScrollToItem(0)
+                onDeletedClicked()
+              }
+            },
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun BehindButtonRow(
+  modifier: Modifier = Modifier,
 ) {
   Row(
-    modifier = Modifier
+    modifier = modifier
       .fillMaxWidth(),
+  ) {
+    Box(
+      modifier = Modifier
+        .weight(1f)
+        .fillMaxHeight()
+        .background(MaterialTheme.colorScheme.background),
+    )
+    Box(
+      modifier = Modifier
+        .weight(1f)
+        .fillMaxHeight()
+        .background(MaterialTheme.colorScheme.errorContainer),
+    ) {
+      Row(
+        modifier = Modifier
+          .align(Alignment.CenterEnd),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.spacedBy(4.dp),
+      ) {
+        Text(
+          text = "Delete",
+          style = MaterialTheme.typography.labelMedium,
+          color = MaterialTheme.colorScheme.onErrorContainer,
+          fontWeight = FontWeight.SemiBold,
+        )
+        Icon(
+          modifier = Modifier
+            .padding(end = 8.dp)
+            .size(24.dp),
+          tint = MaterialTheme.colorScheme.onErrorContainer,
+          painter = painterResource(R.drawable.delete),
+          contentDescription = null,
+        )
+      }
+    }
+  }
+}
+
+@Composable
+private fun DiscRow(
+  modifier: Modifier = Modifier,
+  discItem: DiscItem,
+) {
+  Row(
+    modifier = modifier
+      .background(MaterialTheme.colorScheme.background),
     horizontalArrangement = Arrangement.spacedBy(16.dp),
     verticalAlignment = Alignment.CenterVertically,
   ) {

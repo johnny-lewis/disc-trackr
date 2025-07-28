@@ -22,4 +22,8 @@ class DatabaseRepository(
   override suspend fun addDisc(disc: Disc): Result<Unit, Throwable> = runCatching {
     discDao.insert(disc.mapToDiscEntity())
   }
+
+  override suspend fun deleteDisc(id: Int): Result<Unit, Throwable> = runCatching {
+    discDao.deleteById(id)
+  }
 }

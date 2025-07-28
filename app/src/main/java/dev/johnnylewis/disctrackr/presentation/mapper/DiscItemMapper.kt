@@ -10,8 +10,12 @@ import dev.johnnylewis.disctrackr.presentation.model.DiscFormat as PresentationD
 private const val BLU_RAY_IMAGE_URL =
   "https://images.static-bluray.com/movies/covers/{{id}}_front.jpg"
 
-fun Disc.mapToPresentation(): DiscItem =
-  format.mapToPresentation().let { (format, regions) ->
+fun List<Disc>.mapToPresentation(): List<DiscItem> =
+  mapNotNull(Disc::mapToPresentation)
+
+private fun Disc.mapToPresentation(): DiscItem? =
+  id?.let {
+    val (format, regions) = format.mapToPresentation()
     DiscItem(
       id = id,
       title = title,

@@ -5,7 +5,6 @@ import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
-import dev.johnnylewis.disctrackr.domain.model.Disc
 import dev.johnnylewis.disctrackr.domain.repository.DatabaseRepositoryContract
 import dev.johnnylewis.disctrackr.presentation.mapper.mapToDisc
 import dev.johnnylewis.disctrackr.presentation.mapper.mapToPresentation
@@ -34,7 +33,7 @@ class DiscScreenViewModel @Inject constructor(
               } else {
                 State.SubState.Loaded
               },
-              discs = discs.map(Disc::mapToPresentation),
+              discs = discs.mapToPresentation(),
             )
           }
         }
@@ -50,6 +49,7 @@ class DiscScreenViewModel @Inject constructor(
       is Event.DiscFormExpandedChanged -> onDiscFormExpandedChanged(event.isExpanded)
       Event.DiscFormStateCleared -> onDiscFormStateCleared()
       is Event.DiscFormSubmitted -> onDiscFormSubmitted(event.result)
+      is Event.DiscDeleted -> onDiscDeleted(event.id)
     }
   }
 
@@ -73,6 +73,14 @@ class DiscScreenViewModel @Inject constructor(
     }
   }
 
+  private fun onDiscDeleted(id: Int?) {
+    id?.let {
+      viewModelScope.launch {
+        discRepository.deleteDisc(id)
+      }
+    }
+  }
+
   data class State(
     val subState: SubState = SubState.Initial,
     val discs: List<DiscItem> = emptyList(),
@@ -91,5 +99,6 @@ class DiscScreenViewModel @Inject constructor(
     data class DiscFormExpandedChanged(val isExpanded: Boolean) : Event
     data object DiscFormStateCleared : Event
     data class DiscFormSubmitted(val result: DiscFormResult) : Event
+    data class DiscDeleted(val id: Int?) : Event
   }
 }

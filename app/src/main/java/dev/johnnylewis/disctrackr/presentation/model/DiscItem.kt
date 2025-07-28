@@ -1,7 +1,7 @@
 package dev.johnnylewis.disctrackr.presentation.model
 
 data class DiscItem(
-  val id: Int?,
+  val id: Int,
   val title: String,
   val imageUrl: String?,
   val format: DiscFormat,

@@ -40,6 +40,7 @@ import dev.johnnylewis.disctrackr.presentation.component.DiscListItem
 import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
 import dev.johnnylewis.disctrackr.presentation.util.LightDarkPreview
 import dev.johnnylewis.disctrackr.presentation.util.PreviewHelper
+import dev.johnnylewis.disctrackr.presentation.util.isLastIndex
 import dev.johnnylewis.disctrackr.presentation.util.screenSize
 import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscScreenViewModel
 
@@ -124,10 +125,21 @@ private fun LoadedState(
         }
       }
     }
-    items(state.discs.size) { index ->
-      Column {
-        DiscListItem(discItem = state.discs[index])
-        if (index != state.discs.size - 1) {
+    items(
+      items = state.discs,
+      key = { disc -> disc.id },
+    ) { disc ->
+      Column(
+        modifier = Modifier
+          .animateItem(),
+      ) {
+        DiscListItem(
+          discItem = disc,
+          onDeletedClicked = {
+            onEvent(DiscScreenViewModel.Event.DiscDeleted(disc.id))
+          },
+        )
+        if (state.discs.isLastIndex(disc.id)) {
           Box(
             modifier = Modifier
               .padding(8.dp)
