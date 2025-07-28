@@ -31,6 +31,7 @@ fun Disc.mapToDiscEntity(): DiscEntity =
       distributor = distributor,
       year = year,
       blurayId = blurayId,
+      titleSort = createTitleSort(),
     )
   }
 
@@ -74,3 +75,17 @@ private fun DiscFormat.toEntity(): Pair<String, String?> =
     is DiscFormat.BluRay -> "br" to regions.joinToString(",")
     is DiscFormat.UHD -> "uhd" to null
   }
+
+private val ignoredWords: List<String> = listOf("the", "a", "an", "of")
+private fun Disc.createTitleSort(): String =
+  title
+    .lowercase()
+    .split(" ")
+    .let { parts ->
+      if (parts.first() in ignoredWords) {
+        parts.subList(1, parts.size - 1) + (parts.last() + ",") + parts.first()
+      } else {
+        parts
+      }
+    }
+    .joinToString(" ")

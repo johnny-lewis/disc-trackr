@@ -17,4 +17,5 @@ data class DiscEntity(
   val distributor: String,
   val year: Int?,
   val blurayId: String,
+  val titleSort: String,
 )
