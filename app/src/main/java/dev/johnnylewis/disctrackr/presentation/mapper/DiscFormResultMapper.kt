@@ -1,3 +1,5 @@
+@file:Suppress("ktlint:standard:filename")
+
 package dev.johnnylewis.disctrackr.presentation.mapper
 
 import dev.johnnylewis.disctrackr.domain.model.Disc
@@ -35,13 +37,13 @@ private fun PresentationDiscFormat.mapToDomain(regions: List<DiscRegion>): Domai
 
 private fun DiscRegion.mapToDvdRegion(): DomainDiscFormat.DVD.Region? =
   when (this) {
-    DiscRegion.Zero -> DomainDiscFormat.DVD.Region.ALL
-    DiscRegion.One -> DomainDiscFormat.DVD.Region.ONE
-    DiscRegion.Two -> DomainDiscFormat.DVD.Region.TWO
-    DiscRegion.Three -> DomainDiscFormat.DVD.Region.THREE
-    DiscRegion.Four -> DomainDiscFormat.DVD.Region.FOUR
-    DiscRegion.Five -> DomainDiscFormat.DVD.Region.FIVE
-    DiscRegion.Six -> DomainDiscFormat.DVD.Region.SIX
+    DiscRegion.ZERO -> DomainDiscFormat.DVD.Region.ALL
+    DiscRegion.ONE -> DomainDiscFormat.DVD.Region.ONE
+    DiscRegion.TWO -> DomainDiscFormat.DVD.Region.TWO
+    DiscRegion.THREE -> DomainDiscFormat.DVD.Region.THREE
+    DiscRegion.FOUR -> DomainDiscFormat.DVD.Region.FOUR
+    DiscRegion.FIVE -> DomainDiscFormat.DVD.Region.FIVE
+    DiscRegion.SIX -> DomainDiscFormat.DVD.Region.SIX
     else -> null
   }
 

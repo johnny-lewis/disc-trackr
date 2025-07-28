@@ -62,13 +62,13 @@ private fun DiscFormat.getRegions(): List<DiscRegion> =
 @Composable
 private fun DiscRegion.getTitle(): String =
   when (this) {
-    DiscRegion.Zero -> stringResource(R.string.disc_screen_form_region_zero)
-    DiscRegion.One -> stringResource(R.string.disc_screen_form_region_one)
-    DiscRegion.Two -> stringResource(R.string.disc_screen_form_region_two)
-    DiscRegion.Three -> stringResource(R.string.disc_screen_form_region_three)
-    DiscRegion.Four -> stringResource(R.string.disc_screen_form_region_four)
-    DiscRegion.Five -> stringResource(R.string.disc_screen_form_region_five)
-    DiscRegion.Six -> stringResource(R.string.disc_screen_form_region_six)
+    DiscRegion.ZERO -> stringResource(R.string.disc_screen_form_region_zero)
+    DiscRegion.ONE -> stringResource(R.string.disc_screen_form_region_one)
+    DiscRegion.TWO -> stringResource(R.string.disc_screen_form_region_two)
+    DiscRegion.THREE -> stringResource(R.string.disc_screen_form_region_three)
+    DiscRegion.FOUR -> stringResource(R.string.disc_screen_form_region_four)
+    DiscRegion.FIVE -> stringResource(R.string.disc_screen_form_region_five)
+    DiscRegion.SIX -> stringResource(R.string.disc_screen_form_region_six)
     DiscRegion.A -> stringResource(R.string.disc_screen_form_region_a)
     DiscRegion.B -> stringResource(R.string.disc_screen_form_region_b)
     DiscRegion.C -> stringResource(R.string.disc_screen_form_region_c)

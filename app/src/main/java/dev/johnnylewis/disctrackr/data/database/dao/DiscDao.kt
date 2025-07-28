@@ -19,6 +19,6 @@ interface DiscDao {
   @Query("DELETE FROM $DISC_TABLE_NAME WHERE id = :id")
   suspend fun deleteById(id: Int)
 
-  @Query("SELECT * FROM $DISC_TABLE_NAME")
+  @Query("SELECT * FROM $DISC_TABLE_NAME ORDER BY title")
   fun getAll(): Flow<List<DiscEntity>>
 }

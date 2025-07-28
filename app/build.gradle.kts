@@ -55,7 +55,7 @@ android {
 ktlint {
   android = true
   ignoreFailures = false
-  version.set("0.46.1")
+  version.set("0.47.1")
   reporters {
     reporter(ReporterType.JSON)
     reporter(ReporterType.CHECKSTYLE)
@@ -98,6 +98,10 @@ dependencies {
   // Result Monad
   implementation(libs.result.monad)
   implementation(libs.result.monad.coroutines)
+
+  // Coil
+  implementation(libs.coil)
+  implementation(libs.coil.network)
 
   // Testing
   testImplementation(libs.junit)

@@ -8,7 +8,9 @@ import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.johnnylewis.disctrackr.domain.model.Disc
 import dev.johnnylewis.disctrackr.domain.repository.DatabaseRepositoryContract
 import dev.johnnylewis.disctrackr.presentation.mapper.mapToDisc
+import dev.johnnylewis.disctrackr.presentation.mapper.mapToPresentation
 import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
+import dev.johnnylewis.disctrackr.presentation.model.DiscItem
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -32,7 +34,7 @@ class DiscScreenViewModel @Inject constructor(
               } else {
                 State.SubState.Loaded
               },
-              discs = discs,
+              discs = discs.map(Disc::mapToPresentation),
             )
           }
         }
@@ -73,7 +75,7 @@ class DiscScreenViewModel @Inject constructor(
 
   data class State(
     val subState: SubState = SubState.Initial,
-    val discs: List<Disc> = emptyList(),
+    val discs: List<DiscItem> = emptyList(),
     val isDiscFormExpanded: Boolean = false,
     val shouldClearDiscFormState: Boolean = false,
   ) {

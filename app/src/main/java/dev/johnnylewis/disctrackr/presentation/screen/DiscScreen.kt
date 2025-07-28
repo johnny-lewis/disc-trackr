@@ -3,15 +3,21 @@ package dev.johnnylewis.disctrackr.presentation.screen
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
@@ -21,12 +27,14 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.johnnylewis.disctrackr.R
 import dev.johnnylewis.disctrackr.presentation.component.DiscForm
+import dev.johnnylewis.disctrackr.presentation.component.DiscListItem
 import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
 import dev.johnnylewis.disctrackr.presentation.util.LightDarkPreview
 import dev.johnnylewis.disctrackr.presentation.util.PreviewHelper
@@ -56,7 +64,10 @@ private fun DiscScreenContent(
         onEvent = onEvent,
       )
     DiscScreenViewModel.State.SubState.Loaded ->
-      InitialState()
+      LoadedState(
+        state = state,
+        onEvent = onEvent,
+      )
     DiscScreenViewModel.State.SubState.Error ->
       ErrorState()
   }
@@ -72,6 +83,49 @@ private fun DiscScreenContent(
       onEvent(DiscScreenViewModel.Event.DiscFormSubmitted(result))
     },
   )
+}
+
+@Composable
+private fun LoadedState(
+  state: DiscScreenViewModel.State,
+  onEvent: (DiscScreenViewModel.Event) -> Unit,
+) {
+  LazyColumn(
+    modifier = Modifier
+      .fillMaxSize()
+      .padding(horizontal = 16.dp),
+    verticalArrangement = Arrangement.spacedBy(8.dp),
+  ) {
+    item {
+      Row(
+        modifier = Modifier
+          .fillMaxWidth(),
+        verticalAlignment = Alignment.CenterVertically,
+      ) {
+        Text(
+          modifier = Modifier
+            .weight(1f),
+          text = stringResource(R.string.disc_screen_title),
+          style = MaterialTheme.typography.titleMedium,
+          color = MaterialTheme.colorScheme.onBackground,
+          fontWeight = FontWeight.SemiBold,
+        )
+        IconButton(
+          onClick = {
+            onEvent(DiscScreenViewModel.Event.DiscFormExpandedChanged(isExpanded = true))
+          },
+        ) {
+          Icon(
+            painter = painterResource(R.drawable.add),
+            contentDescription = null,
+          )
+        }
+      }
+    }
+    items(state.discs) { disc ->
+      DiscListItem(disc)
+    }
+  }
 }
 
 @Composable

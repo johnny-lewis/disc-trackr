@@ -40,6 +40,7 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardCapitalization
+import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.johnnylewis.disctrackr.R
@@ -153,6 +154,9 @@ private fun DiscFormContent(
       value = state.blurayId,
       onValueChange = { onEvent(DiscFormViewModel.Event.BlurayIdChanged(it)) },
       label = { Text(stringResource(R.string.disc_screen_form_bluray_id)) },
+      keyboardOptions = KeyboardOptions(
+        keyboardType = KeyboardType.Number,
+      ),
     )
     Spacer(modifier = Modifier.weight(1f))
     Button(
