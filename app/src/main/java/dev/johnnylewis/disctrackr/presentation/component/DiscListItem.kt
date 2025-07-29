@@ -1,8 +1,13 @@
 package dev.johnnylewis.disctrackr.presentation.component
 
+import androidx.compose.animation.core.DecayAnimationSpec
+import androidx.compose.animation.core.Spring
+import androidx.compose.animation.core.spring
+import androidx.compose.animation.rememberSplineBasedDecay
 import androidx.compose.foundation.background
+import androidx.compose.foundation.gestures.snapping.SnapLayoutInfoProvider
 import androidx.compose.foundation.gestures.snapping.SnapPosition
-import androidx.compose.foundation.gestures.snapping.rememberSnapFlingBehavior
+import androidx.compose.foundation.gestures.snapping.snapFlingBehavior
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -57,12 +62,21 @@ fun DiscListItem(
       modifier = Modifier
         .matchParentSize(),
     )
-    val listState = rememberLazyListState()
-    val flingBehavior = rememberSnapFlingBehavior(
-      lazyListState = listState,
-      snapPosition = SnapPosition.End,
-    )
     val scope = rememberCoroutineScope()
+
+    val listState = rememberLazyListState()
+    val snappingLayout = remember(listState) {
+      SnapLayoutInfoProvider(listState, SnapPosition.End)
+    }
+    val snappyAnimationSpec: DecayAnimationSpec<Float> = rememberSplineBasedDecay()
+    val flingBehavior = remember(snappingLayout, snappyAnimationSpec) {
+      snapFlingBehavior(
+        snapLayoutInfoProvider = snappingLayout,
+        decayAnimationSpec = snappyAnimationSpec,
+        snapAnimationSpec = spring(stiffness = Spring.StiffnessMedium),
+      )
+    }
+
     var itemHeight by remember { mutableIntStateOf(0) }
     LazyRow(
       modifier = Modifier

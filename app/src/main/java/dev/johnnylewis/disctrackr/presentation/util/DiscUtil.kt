@@ -8,4 +8,4 @@ fun DiscFormat.hasRegions(): Boolean =
   DiscRegion.entries.any { it.format == this }
 
 fun List<DiscItem>.isLastIndex(id: Int): Boolean =
-  indexOfLast { it.id == id } == size
+  indexOfLast { it.id == id } == indices.last

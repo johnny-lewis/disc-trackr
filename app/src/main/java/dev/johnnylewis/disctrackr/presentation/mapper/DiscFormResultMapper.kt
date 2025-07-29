@@ -1,5 +1,3 @@
-@file:Suppress("ktlint:standard:filename")
-
 package dev.johnnylewis.disctrackr.presentation.mapper
 
 import dev.johnnylewis.disctrackr.domain.model.Disc

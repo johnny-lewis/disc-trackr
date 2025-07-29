@@ -98,9 +98,10 @@ private fun LoadedState(
       .fillMaxSize()
       .padding(horizontal = 16.dp),
   ) {
-    item {
+    stickyHeader {
       Row(
         modifier = Modifier
+          .background(MaterialTheme.colorScheme.background)
           .padding(vertical = 8.dp)
           .fillMaxWidth(),
         verticalAlignment = Alignment.CenterVertically,
@@ -108,7 +109,7 @@ private fun LoadedState(
         Text(
           modifier = Modifier
             .weight(1f),
-          text = stringResource(R.string.disc_screen_title).lowercase(),
+          text = stringResource(R.string.disc_screen_title),
           style = MaterialTheme.typography.headlineMedium,
           color = MaterialTheme.colorScheme.onBackground,
           fontWeight = FontWeight.SemiBold,
@@ -139,7 +140,7 @@ private fun LoadedState(
             onEvent(DiscScreenViewModel.Event.DiscDeleted(disc.id))
           },
         )
-        if (state.discs.isLastIndex(disc.id)) {
+        if (!state.discs.isLastIndex(disc.id)) {
           Box(
             modifier = Modifier
               .padding(8.dp)

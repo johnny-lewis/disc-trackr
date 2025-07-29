@@ -2,7 +2,7 @@
     <string name="app_name">DiscTrackr</string>
 
     <!-- Disc Screen -->
-    <string name="disc_screen_title">Discs</string>
+    <string name="disc_screen_title">discs</string>
     <string name="disc_screen_initial_state_message">Loading collection\u2026</string>
     <string name="disc_screen_empty_state_message_title">Add Discs to Library</string>
     <string name="disc_screen_empty_state_message_body">To start collecting discs, add them to the library by pressing the button below.</string>
