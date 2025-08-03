@@ -36,6 +36,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.johnnylewis.disctrackr.R
 import dev.johnnylewis.disctrackr.presentation.component.DiscForm
+import dev.johnnylewis.disctrackr.presentation.component.DiscListFilters
 import dev.johnnylewis.disctrackr.presentation.component.DiscListItem
 import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
 import dev.johnnylewis.disctrackr.presentation.util.LightDarkPreview
@@ -125,6 +126,15 @@ private fun LoadedState(
           )
         }
       }
+    }
+    item {
+      DiscListFilters(
+        modifier = Modifier
+          .fillMaxWidth()
+          .padding(bottom = 16.dp),
+        state = state.filterState,
+        onEvent = onEvent,
+      )
     }
     items(
       items = state.discs,

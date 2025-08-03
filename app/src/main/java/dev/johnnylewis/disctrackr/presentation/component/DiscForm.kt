@@ -51,6 +51,7 @@ import dev.johnnylewis.disctrackr.presentation.model.DropdownOption
 import dev.johnnylewis.disctrackr.presentation.util.CountryUtil
 import dev.johnnylewis.disctrackr.presentation.util.LightDarkPreview
 import dev.johnnylewis.disctrackr.presentation.util.PreviewHelper
+import dev.johnnylewis.disctrackr.presentation.util.getName
 import dev.johnnylewis.disctrackr.presentation.util.noRippleClickable
 import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscFormViewModel
 
@@ -109,15 +110,15 @@ private fun DiscFormContent(
       options = listOf(
         DropdownOption(
           value = DiscFormat.DVD,
-          title = stringResource(R.string.disc_screen_form_format_DVD),
+          title = DiscFormat.DVD.getName(),
         ),
         DropdownOption(
           value = DiscFormat.BLU_RAY,
-          title = stringResource(R.string.disc_screen_form_format_Blu_Ray),
+          title = DiscFormat.BLU_RAY.getName(),
         ),
         DropdownOption(
           value = DiscFormat.UHD,
-          title = stringResource(R.string.disc_screen_form_format_UHD),
+          title = DiscFormat.UHD.getName(),
         ),
       ),
       onValueChange = { onEvent(DiscFormViewModel.Event.FormatChanged(it)) },

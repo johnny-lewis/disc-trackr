@@ -56,7 +56,6 @@ fun DiscListItem(
   discItem: DiscItem,
   onDeletedClicked: () -> Unit,
 ) {
-  // TODO: Unswipe if another item has been swiped
   Box {
     BehindButtonRow(
       modifier = Modifier

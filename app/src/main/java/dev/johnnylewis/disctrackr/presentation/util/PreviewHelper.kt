@@ -1,12 +1,16 @@
 package dev.johnnylewis.disctrackr.presentation.util
 
 import android.content.res.Configuration
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.unit.dp
 import dev.johnnylewis.disctrackr.presentation.theme.AppTheme
 
 object PreviewHelper {
@@ -22,6 +26,22 @@ object PreviewHelper {
         ) {
           content()
         }
+      }
+    }
+  }
+
+  @Composable
+  fun Component(
+    content: @Composable () -> Unit,
+  ) {
+    AppTheme {
+      Box(
+        modifier = Modifier
+          .background(MaterialTheme.colorScheme.background)
+          .padding(4.dp),
+        contentAlignment = Alignment.Center,
+      ) {
+        content()
       }
     }
   }
