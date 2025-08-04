@@ -7,9 +7,9 @@ import dev.johnnylewis.disctrackr.presentation.model.DiscItem
 import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscScreenViewModel
 
 fun DiscFilterState.update(discs: List<DiscItem>): DiscFilterState {
-  val formats = discs.map { it.format }.distinct()
-  val countries = discs.mapNotNull { it.country }.distinct()
-  val distributors = discs.map { it.distributor }.filterNot { it.isBlank() }.distinct()
+  val formats = discs.map { it.format }.distinct().sortedBy { it.name }
+  val countries = discs.mapNotNull { it.country }.distinct().sortedBy { it.name }
+  val distributors = discs.map { it.distributor }.filterNot { it.isBlank() }.distinct().sorted()
 
   return copy(
     selection = selection.copy(

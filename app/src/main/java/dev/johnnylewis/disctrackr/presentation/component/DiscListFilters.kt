@@ -4,6 +4,7 @@ import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
@@ -89,7 +90,7 @@ private fun <T> DiscFilterChip(
 ) {
   ExposedDropdownMenuBox(
     expanded = isExpanded,
-    onExpandedChange = onExpandedChanged,
+    onExpandedChange = {},
   ) {
     FilterChip(
       modifier = Modifier
@@ -97,21 +98,32 @@ private fun <T> DiscFilterChip(
           type = MenuAnchorType.PrimaryEditable,
           enabled = true,
         ),
-      label = { Text(text = label, maxLines = 1) },
+      label = {
+        Text(
+          text = label,
+          color = if (isSelected) {
+            MaterialTheme.colorScheme.onPrimaryContainer
+          } else {
+            MaterialTheme.colorScheme.onBackground
+          },
+          maxLines = 1,
+        )
+      },
       selected = isSelected,
       onClick = {
         if (isSelected) {
           onOptionSelected(null)
           onExpandedChanged(false)
         } else {
-          onExpandedChanged(true)
+          onExpandedChanged(!isExpanded)
         }
       },
       trailingIcon = getCloseIcon(isSelected),
     )
     ExposedDropdownMenu(
       modifier = Modifier
-        .width(IntrinsicSize.Min),
+        .width(IntrinsicSize.Min)
+        .heightIn(max = 300.dp),
       expanded = isExpanded,
       onDismissRequest = { onExpandedChanged(false) },
     ) {
@@ -136,7 +148,7 @@ private fun getCloseIcon(isSelected: Boolean): (@Composable () -> Unit)? =
       Icon(
         modifier = Modifier
           .size(16.dp),
-        tint = MaterialTheme.colorScheme.onBackground,
+        tint = MaterialTheme.colorScheme.onPrimaryContainer,
         painter = painterResource(R.drawable.close),
         contentDescription = null,
       )
