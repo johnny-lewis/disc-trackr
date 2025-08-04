@@ -45,20 +45,30 @@ fun DiscRegionSelect(
         Row(
           verticalAlignment = Alignment.CenterVertically,
         ) {
-          Checkbox(
-            checked = selectedRegions.contains(region),
-            onCheckedChange = { onRegionSelected(region, it) },
-          )
-          Text(
-            text = region.getTitle(),
-            style = MaterialTheme.typography.labelLarge,
-            color = MaterialTheme.colorScheme.onBackground,
-          )
+          selectedRegions.isOptionDisabled(region).let { isDisabled ->
+            Checkbox(
+              enabled = !isDisabled,
+              checked = selectedRegions.contains(region),
+              onCheckedChange = { onRegionSelected(region, it) },
+            )
+            Text(
+              text = region.getTitle(),
+              style = MaterialTheme.typography.labelLarge,
+              color = MaterialTheme.colorScheme.onBackground.copy(
+                alpha = if (isDisabled) 0.4f else 1f,
+              ),
+            )
+          }
         }
       }
     }
   }
 }
+
+private fun Set<DiscRegion>.isOptionDisabled(region: DiscRegion): Boolean =
+  any {
+    it == DiscRegion.ALL || it == DiscRegion.ZERO
+  } && region != DiscRegion.ALL && region != DiscRegion.ZERO
 
 private fun DiscFormat.getRegions(): List<DiscRegion> =
   DiscRegion.entries.filter { it.format == this }

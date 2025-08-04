@@ -92,7 +92,15 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
 
   private fun onRegionSelected(region: DiscRegion, selected: Boolean) {
     _state.value = _state.value.copy(
-      regions = if (selected) _state.value.regions + region else _state.value.regions - region,
+      regions = if (selected) {
+        if (region == DiscRegion.ALL || region == DiscRegion.ZERO) {
+          setOf(region)
+        } else {
+          _state.value.regions + region
+        }
+      } else {
+        _state.value.regions - region
+      },
     )
   }
 
