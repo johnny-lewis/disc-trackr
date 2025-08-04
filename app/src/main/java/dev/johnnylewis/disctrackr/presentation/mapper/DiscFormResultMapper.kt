@@ -23,15 +23,29 @@ fun DiscFormResult.mapToDisc(): Disc =
 private fun PresentationDiscFormat.mapToDomain(regions: List<DiscRegion>): DomainDiscFormat =
   when (this) {
     PresentationDiscFormat.DVD ->
-      DomainDiscFormat.DVD(
-        regions = regions.mapNotNull(DiscRegion::mapToDvdRegion),
-      )
+      DomainDiscFormat.DVD(regions = regions.mapToDvdRegion())
     PresentationDiscFormat.BLU_RAY ->
-      DomainDiscFormat.BluRay(
-        regions = regions.mapNotNull(DiscRegion::mapToBluRayRegion),
-      )
+      DomainDiscFormat.BluRay(regions = regions.mapToBluRayRegion())
     PresentationDiscFormat.UHD ->
       DomainDiscFormat.UHD
+  }
+
+// If the list size is 6, then all regions are selected as choosing 0 with other regions is not
+// possible from the UI
+private fun List<DiscRegion>.mapToDvdRegion(): List<DomainDiscFormat.DVD.Region> =
+  if (size == DomainDiscFormat.DVD.Region.entries.size - 1) {
+    listOf(DomainDiscFormat.DVD.Region.ALL)
+  } else {
+    mapNotNull(DiscRegion::mapToDvdRegion)
+  }
+
+// Same here. ALL is not possible from the UI if there are other regions selected. So the assumption
+// that if the size is 3 then A, B, and C are selected is used.
+private fun List<DiscRegion>.mapToBluRayRegion(): List<DomainDiscFormat.BluRay.Region> =
+  if (size == DomainDiscFormat.BluRay.Region.entries.size - 1) {
+    listOf(DomainDiscFormat.BluRay.Region.ALL)
+  } else {
+    mapNotNull(DiscRegion::mapToBluRayRegion)
   }
 
 private fun DiscRegion.mapToDvdRegion(): DomainDiscFormat.DVD.Region? =

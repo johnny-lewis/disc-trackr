@@ -1,9 +1,16 @@
 package dev.johnnylewis.disctrackr.presentation.component
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.foundation.background
 import androidx.compose.foundation.horizontalScroll
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.IntrinsicSize
 import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.fillMaxHeight
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
@@ -22,7 +29,10 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
@@ -39,41 +49,86 @@ fun DiscListFilters(
   state: DiscFilterState,
   onEvent: (DiscScreenViewModel.Event) -> Unit,
 ) {
-  Row(
+  val scrollState = rememberScrollState()
+  Box(
     modifier = modifier
-      .horizontalScroll(rememberScrollState()),
-    horizontalArrangement = Arrangement.spacedBy(8.dp),
+      .height(IntrinsicSize.Min),
   ) {
-    var isFormatExpanded by remember { mutableStateOf(false) }
-    var isCountryExpanded by remember { mutableStateOf(false) }
-    var isDistributorExpanded by remember { mutableStateOf(false) }
+    Row(
+      modifier = Modifier
+        .horizontalScroll(scrollState),
+      horizontalArrangement = Arrangement.spacedBy(8.dp),
+    ) {
+      var isFormatExpanded by remember { mutableStateOf(false) }
+      var isCountryExpanded by remember { mutableStateOf(false) }
+      var isDistributorExpanded by remember { mutableStateOf(false) }
 
-    DiscFilterChip(
-      label = state.selection.format?.getName()
-        ?: stringResource(R.string.disc_screen_filter_format),
-      options = state.options.formats.map { FilterChipOption(label = it.getName(), data = it) },
-      isSelected = state.selection.format != null,
-      isExpanded = isFormatExpanded,
-      onExpandedChanged = { isFormatExpanded = it },
-      onOptionSelected = { onEvent(DiscScreenViewModel.Event.FormatFilterChanged(it)) },
+      DiscFilterChip(
+        label = state.selection.format?.getName()
+          ?: stringResource(R.string.disc_screen_filter_format),
+        options = state.options.formats.map { FilterChipOption(label = it.getName(), data = it) },
+        isSelected = state.selection.format != null,
+        isExpanded = isFormatExpanded,
+        onExpandedChanged = { isFormatExpanded = it },
+        onOptionSelected = { onEvent(DiscScreenViewModel.Event.FormatFilterChanged(it)) },
+      )
+      DiscFilterChip(
+        label = state.selection.country?.name
+          ?: stringResource(R.string.disc_screen_filter_country),
+        options = state.options.countries.map { FilterChipOption(label = it.name, data = it) },
+        isSelected = state.selection.country != null,
+        isExpanded = isCountryExpanded,
+        onExpandedChanged = { isCountryExpanded = it },
+        onOptionSelected = { onEvent(DiscScreenViewModel.Event.CountryFilterChanged(it)) },
+      )
+      DiscFilterChip(
+        label = state.selection.distributor
+          ?: stringResource(R.string.disc_screen_filter_distributor),
+        options = state.options.distributors.map { FilterChipOption(label = it, data = it) },
+        isSelected = state.selection.distributor != null,
+        isExpanded = isDistributorExpanded,
+        onExpandedChanged = { isDistributorExpanded = it },
+        onOptionSelected = { onEvent(DiscScreenViewModel.Event.DistributorFilterChanged(it)) },
+      )
+    }
+    ScrollBlur(
+      modifier = Modifier
+        .align(Alignment.CenterStart),
+      isVisible = scrollState.canScrollBackward,
+      colors = listOf(
+        MaterialTheme.colorScheme.background,
+        Color.Transparent,
+      ),
     )
-    DiscFilterChip(
-      label = state.selection.country?.name
-        ?: stringResource(R.string.disc_screen_filter_country),
-      options = state.options.countries.map { FilterChipOption(label = it.name, data = it) },
-      isSelected = state.selection.country != null,
-      isExpanded = isCountryExpanded,
-      onExpandedChanged = { isCountryExpanded = it },
-      onOptionSelected = { onEvent(DiscScreenViewModel.Event.CountryFilterChanged(it)) },
+    ScrollBlur(
+      modifier = Modifier
+        .align(Alignment.CenterEnd),
+      isVisible = scrollState.canScrollForward,
+      colors = listOf(
+        Color.Transparent,
+        MaterialTheme.colorScheme.background,
+      ),
     )
-    DiscFilterChip(
-      label = state.selection.distributor
-        ?: stringResource(R.string.disc_screen_filter_distributor),
-      options = state.options.distributors.map { FilterChipOption(label = it, data = it) },
-      isSelected = state.selection.distributor != null,
-      isExpanded = isDistributorExpanded,
-      onExpandedChanged = { isDistributorExpanded = it },
-      onOptionSelected = { onEvent(DiscScreenViewModel.Event.DistributorFilterChanged(it)) },
+  }
+}
+
+@Composable
+private fun ScrollBlur(
+  modifier: Modifier = Modifier,
+  isVisible: Boolean,
+  colors: List<Color>,
+) {
+  AnimatedVisibility(
+    modifier = modifier,
+    visible = isVisible,
+    enter = fadeIn(),
+    exit = fadeOut(),
+  ) {
+    Box(
+      modifier = Modifier
+        .width(10.dp)
+        .fillMaxHeight()
+        .background(Brush.horizontalGradient(colors)),
     )
   }
 }
@@ -81,6 +136,7 @@ fun DiscListFilters(
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 private fun <T> DiscFilterChip(
+  modifier: Modifier = Modifier,
   label: String,
   options: List<FilterChipOption<T>>,
   isSelected: Boolean,
@@ -93,7 +149,7 @@ private fun <T> DiscFilterChip(
     onExpandedChange = {},
   ) {
     FilterChip(
-      modifier = Modifier
+      modifier = modifier
         .menuAnchor(
           type = MenuAnchorType.PrimaryEditable,
           enabled = true,
