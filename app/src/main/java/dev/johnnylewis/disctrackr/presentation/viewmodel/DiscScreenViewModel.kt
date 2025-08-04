@@ -39,8 +39,13 @@ class DiscScreenViewModel @Inject constructor(
         viewModelScope.launch {
           discsFlow.collect { discs ->
             discs.mapToPresentation().let { presentationDiscs ->
+              if (presentationDiscs.isEmpty()) {
+                if (_filterFlow.value.hasFilters()) {
+                  _filterFlow.value = DiscFilter()
+                }
+              }
               _state.value = _state.value.copy(
-                subState = if (discs.isEmpty()) {
+                subState = if (presentationDiscs.isEmpty()) {
                   State.SubState.Empty
                 } else {
                   State.SubState.Loaded
