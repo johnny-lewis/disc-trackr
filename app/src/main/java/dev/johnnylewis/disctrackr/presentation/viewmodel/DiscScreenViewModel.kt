@@ -5,8 +5,11 @@ import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.johnnylewis.disctrackr.domain.model.DiscFilter
 import dev.johnnylewis.disctrackr.domain.repository.DatabaseRepositoryContract
+import dev.johnnylewis.disctrackr.domain.usecase.GetDiscsUseCase
 import dev.johnnylewis.disctrackr.presentation.mapper.mapToDisc
+import dev.johnnylewis.disctrackr.presentation.mapper.mapToDomainClass
 import dev.johnnylewis.disctrackr.presentation.mapper.mapToPresentation
 import dev.johnnylewis.disctrackr.presentation.model.Country
 import dev.johnnylewis.disctrackr.presentation.model.DiscFilterState
@@ -22,13 +25,16 @@ import javax.inject.Inject
 
 @HiltViewModel
 class DiscScreenViewModel @Inject constructor(
+  getDiscs: GetDiscsUseCase,
   private val discRepository: DatabaseRepositoryContract,
 ) : ViewModel() {
   private val _state = MutableStateFlow<State>(State())
   val state = _state.asStateFlow()
 
+  private val _filterFlow = MutableStateFlow(DiscFilter())
+
   init {
-    discRepository.getAllDiscs()
+    getDiscs(filterFlow = _filterFlow.asStateFlow())
       .onSuccess { discsFlow ->
         viewModelScope.launch {
           discsFlow.collect { discs ->
@@ -94,14 +100,17 @@ class DiscScreenViewModel @Inject constructor(
 
   private fun onFormatFilterChanged(format: DiscFormat?) {
     _state.value = _state.value.withFilter(format)
+    _filterFlow.value = _filterFlow.value.copy(format = format?.mapToDomainClass())
   }
 
   private fun onCountryFilterChanged(country: Country?) {
     _state.value = _state.value.withFilter(country)
+    _filterFlow.value = _filterFlow.value.copy(countryCode = country?.code)
   }
 
   private fun onDistributorFilterChanged(distributor: String?) {
     _state.value = _state.value.withFilter(distributor)
+    _filterFlow.value = _filterFlow.value.copy(distributor = distributor)
   }
 
   data class State(
