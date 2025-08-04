@@ -1,5 +1,8 @@
 package dev.johnnylewis.disctrackr.presentation.screen
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.slideInVertically
+import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -14,19 +17,24 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.rememberLazyListState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.IconButtonDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
 import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
@@ -44,6 +52,7 @@ import dev.johnnylewis.disctrackr.presentation.util.PreviewHelper
 import dev.johnnylewis.disctrackr.presentation.util.isLastIndex
 import dev.johnnylewis.disctrackr.presentation.util.screenSize
 import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscScreenViewModel
+import kotlinx.coroutines.launch
 
 @Composable
 fun DiscScreen(viewModel: DiscScreenViewModel) {
@@ -94,73 +103,93 @@ private fun LoadedState(
   state: DiscScreenViewModel.State,
   onEvent: (DiscScreenViewModel.Event) -> Unit,
 ) {
-  LazyColumn(
-    modifier = Modifier
-      .fillMaxSize()
-      .padding(horizontal = 16.dp),
-  ) {
-    stickyHeader {
-      Row(
-        modifier = Modifier
-          .background(MaterialTheme.colorScheme.background)
-          .padding(vertical = 8.dp)
-          .fillMaxWidth(),
-        verticalAlignment = Alignment.CenterVertically,
-      ) {
-        Text(
+  val coroutineScope = rememberCoroutineScope()
+  val listState = rememberLazyListState()
+  val isScrollButtonVisible by remember {
+    derivedStateOf { listState.firstVisibleItemIndex > 0 && listState.canScrollForward }
+  }
+
+  Box(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(
+      modifier = Modifier
+        .fillMaxSize()
+        .padding(horizontal = 16.dp),
+      state = listState,
+    ) {
+      stickyHeader {
+        Row(
           modifier = Modifier
-            .weight(1f),
-          text = stringResource(R.string.disc_screen_title),
-          style = MaterialTheme.typography.headlineMedium,
-          color = MaterialTheme.colorScheme.onBackground,
-          fontWeight = FontWeight.SemiBold,
-        )
-        IconButton(
-          onClick = {
-            onEvent(DiscScreenViewModel.Event.DiscFormExpandedChanged(isExpanded = true))
-          },
+            .background(MaterialTheme.colorScheme.background)
+            .padding(vertical = 8.dp)
+            .fillMaxWidth(),
+          verticalAlignment = Alignment.CenterVertically,
         ) {
-          Icon(
-            painter = painterResource(R.drawable.add),
-            contentDescription = null,
-          )
-        }
-      }
-    }
-    item {
-      DiscListFilters(
-        modifier = Modifier
-          .fillMaxWidth()
-          .padding(bottom = 16.dp),
-        state = state.filterState,
-        onEvent = onEvent,
-      )
-    }
-    items(
-      items = state.discs,
-      key = { disc -> disc.id },
-    ) { disc ->
-      Column(
-        modifier = Modifier
-          .animateItem(),
-      ) {
-        DiscListItem(
-          discItem = disc,
-          onDeletedClicked = {
-            onEvent(DiscScreenViewModel.Event.DiscDeleted(disc.id))
-          },
-        )
-        if (!state.discs.isLastIndex(disc.id)) {
-          Box(
+          Text(
             modifier = Modifier
-              .padding(8.dp)
-              .fillMaxWidth()
-              .height((0.5).dp)
-              .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f)),
+              .weight(1f),
+            text = stringResource(R.string.disc_screen_title),
+            style = MaterialTheme.typography.headlineMedium,
+            color = MaterialTheme.colorScheme.onBackground,
+            fontWeight = FontWeight.SemiBold,
           )
+          IconButton(
+            onClick = {
+              onEvent(DiscScreenViewModel.Event.DiscFormExpandedChanged(isExpanded = true))
+            },
+          ) {
+            Icon(
+              painter = painterResource(R.drawable.add),
+              contentDescription = null,
+            )
+          }
+        }
+      }
+      item {
+        DiscListFilters(
+          modifier = Modifier
+            .fillMaxWidth()
+            .padding(bottom = 16.dp),
+          state = state.filterState,
+          onEvent = onEvent,
+        )
+      }
+      items(
+        items = state.discs,
+        key = { disc -> disc.id },
+      ) { disc ->
+        Column(
+          modifier = Modifier
+            .animateItem(),
+        ) {
+          DiscListItem(
+            discItem = disc,
+            onDeletedClicked = {
+              onEvent(DiscScreenViewModel.Event.DiscDeleted(disc.id))
+            },
+          )
+          if (!state.discs.isLastIndex(disc.id)) {
+            Box(
+              modifier = Modifier
+                .padding(8.dp)
+                .fillMaxWidth()
+                .height((0.5).dp)
+                .background(MaterialTheme.colorScheme.onBackground.copy(alpha = 0.4f)),
+            )
+          }
         }
       }
     }
+    ScrollTopButton(
+      modifier = Modifier
+        .align(Alignment.BottomCenter)
+        .padding(bottom = 12.dp),
+      isVisible = isScrollButtonVisible,
+      onClick = {
+        coroutineScope.launch {
+          listState.animateScrollToItem(0)
+        }
+      },
+    )
   }
 }
 
@@ -287,6 +316,37 @@ private fun BottomSheet(
       onStateCleared = onStateCleared,
       onSubmit = onSubmit,
     )
+  }
+}
+
+@Composable
+private fun ScrollTopButton(
+  modifier: Modifier = Modifier,
+  isVisible: Boolean,
+  onClick: () -> Unit,
+) {
+  AnimatedVisibility(
+    modifier = modifier,
+    visible = isVisible,
+    enter = slideInVertically(initialOffsetY = { it / 2 }),
+    exit = slideOutVertically(targetOffsetY = { it / 2 }),
+  ) {
+    IconButton(
+      modifier = Modifier
+        .size(46.dp),
+      colors = IconButtonDefaults.iconButtonColors(
+        containerColor = MaterialTheme.colorScheme.primary,
+        contentColor = MaterialTheme.colorScheme.onPrimary,
+      ),
+      onClick = onClick,
+    ) {
+      Icon(
+        modifier = Modifier
+          .size(22.dp),
+        painter = painterResource(R.drawable.scroll_top),
+        contentDescription = null,
+      )
+    }
   }
 }
 
