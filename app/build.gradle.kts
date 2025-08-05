@@ -23,6 +23,12 @@ android {
     versionName = "1.0"
 
     testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+    javaCompileOptions {
+      annotationProcessorOptions {
+        arguments.put("room.schemaLocation", "$projectDir/schemas")
+      }
+    }
   }
 
   buildTypes {
@@ -49,7 +55,7 @@ android {
 ktlint {
   android = true
   ignoreFailures = false
-  version.set("0.46.1")
+  version.set("0.47.1")
   reporters {
     reporter(ReporterType.JSON)
     reporter(ReporterType.CHECKSTYLE)
@@ -69,6 +75,10 @@ dependencies {
   implementation(libs.androidx.material3)
   implementation(libs.androidx.google.fonts)
   implementation(libs.androidx.navigation)
+  implementation(libs.androidx.ui)
+  implementation(libs.androidx.ui.graphics)
+  implementation(libs.androidx.ui.tooling.preview)
+  debugImplementation(libs.androidx.ui.tooling)
 
   // Hilt
   implementation(libs.hilt)
@@ -79,6 +89,19 @@ dependencies {
 
   // Serialization
   implementation(libs.kotlin.serialization)
+
+  // Room
+  implementation(libs.room.runtime)
+  implementation(libs.room.ktx)
+  ksp(libs.room.compiler)
+
+  // Result Monad
+  implementation(libs.result.monad)
+  implementation(libs.result.monad.coroutines)
+
+  // Coil
+  implementation(libs.coil)
+  implementation(libs.coil.network)
 
   // Testing
   testImplementation(libs.junit)

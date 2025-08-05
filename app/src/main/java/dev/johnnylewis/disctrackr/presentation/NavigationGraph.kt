@@ -2,7 +2,10 @@ package dev.johnnylewis.disctrackr.presentation
 
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
+import androidx.compose.foundation.layout.padding
+import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -21,14 +24,18 @@ class NavigationGraph(
   @Composable
   fun Build(startDestination: Route) {
     navController = rememberNavController()
-    NavHost(
-      navController = navController,
-      startDestination = startDestination,
-    ) {
-      composable<Route.Disc> {
-        DiscScreen(
-          viewModel = discScreenViewModel,
-        )
+    Scaffold { paddingValues ->
+      NavHost(
+        modifier = Modifier
+          .padding(paddingValues),
+        navController = navController,
+        startDestination = startDestination,
+      ) {
+        composable<Route.Disc> {
+          DiscScreen(
+            viewModel = discScreenViewModel,
+          )
+        }
       }
     }
   }
