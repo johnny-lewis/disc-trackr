@@ -2,12 +2,15 @@
 agp = "8.12.0"
 kotlin = "2.2.0"
 ksp = "2.2.0-2.0.2"
+kover = "0.9.1"
 ktlint = "12.0.2"
 ktlintCompose = "0.4.26"
 coreKtx = "1.16.0"
 junit = "4.13.2"
 junitVersion = "1.3.0"
-espressoCore = "3.7.0"
+mockk = "1.14.5"
+robolectric = "4.15.1"
+junitParams = "1.1.1"
 hilt = "2.57"
 activityCompose = "1.10.1"
 composeBom = "2025.07.00"
@@ -15,7 +18,7 @@ navigationCompose = "2.9.3"
 timber = "5.0.1"
 serialization = "1.9.0"
 room = "2.7.2"
-result = "2.0.1"
+result = "2.1.0"
 coil = "3.3.0"
 
 [libraries]
@@ -62,7 +65,9 @@ coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", versi
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
 androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "junitVersion" }
-androidx-espresso-core = { group = "androidx.test.espresso", name = "espresso-core", version.ref = "espressoCore" }
+robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
+mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
+junit-params = { group = "pl.pragmatists", name = "JUnitParams", version.ref = "junitParams" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }
@@ -72,3 +77,4 @@ ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
 hilt = { id = "com.google.dagger.hilt.android", version.ref = "hilt" }
 kotlin-serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 ktlint = { id = "org.jlleitschuh.gradle.ktlint", version.ref = "ktlint" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }

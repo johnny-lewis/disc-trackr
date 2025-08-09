@@ -9,6 +9,7 @@ plugins {
   alias(libs.plugins.hilt)
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.ktlint)
+  alias(libs.plugins.kover)
 }
 
 android {
@@ -105,6 +106,8 @@ dependencies {
 
   // Testing
   testImplementation(libs.junit)
-  androidTestImplementation(libs.androidx.junit)
-  androidTestImplementation(libs.androidx.espresso.core)
+  testImplementation(libs.androidx.junit)
+  testImplementation(libs.robolectric)
+  testImplementation(libs.mockk)
+  testImplementation(libs.junit.params)
 }
