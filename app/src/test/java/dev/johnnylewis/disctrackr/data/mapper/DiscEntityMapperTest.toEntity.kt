@@ -1,7 +1,10 @@
 package dev.johnnylewis.disctrackr.data.mapper
 
 import com.google.common.truth.Truth.assertThat
+import dev.johnnylewis.disctrackr.domain.builder.buildBluRayDiscFormat
+import dev.johnnylewis.disctrackr.domain.builder.buildDVDDiscFormat
 import dev.johnnylewis.disctrackr.domain.builder.buildDisc
+import dev.johnnylewis.disctrackr.domain.builder.buildUHDDiscFormat
 import dev.johnnylewis.disctrackr.domain.model.DiscFormat
 import junitparams.JUnitParamsRunner
 import junitparams.Parameters
@@ -19,7 +22,7 @@ class DiscEntityMapperTestToEntity {
     domainRegions: List<DiscFormat.DVD.Region>,
     entityRegions: String,
   ) {
-    val disc = buildDisc(format = DiscFormat.DVD(regions = domainRegions))
+    val disc = buildDisc(format = buildDVDDiscFormat(domainRegions))
     with(disc.mapToDiscEntity()) {
       assertThat(id).isEqualTo(disc.id)
       assertThat(title).isEqualTo(disc.title)
@@ -40,7 +43,7 @@ class DiscEntityMapperTestToEntity {
     domainRegions: List<DiscFormat.BluRay.Region>,
     entityRegions: String,
   ) {
-    val disc = buildDisc(format = DiscFormat.BluRay(regions = domainRegions))
+    val disc = buildDisc(format = buildBluRayDiscFormat(domainRegions))
     with(disc.mapToDiscEntity()) {
       assertThat(id).isEqualTo(disc.id)
       assertThat(title).isEqualTo(disc.title)
@@ -56,7 +59,7 @@ class DiscEntityMapperTestToEntity {
 
   @Test
   fun `Given disc with uhd format, when mapping to disc entity, then it maps to disc entity with format uhd`() {
-    val disc = buildDisc(format = DiscFormat.UHD)
+    val disc = buildDisc(format = buildUHDDiscFormat())
     with(disc.mapToDiscEntity()) {
       assertThat(id).isEqualTo(disc.id)
       assertThat(title).isEqualTo(disc.title)
