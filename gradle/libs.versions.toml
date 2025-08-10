@@ -11,6 +11,9 @@ junitVersion = "1.3.0"
 mockk = "1.14.5"
 robolectric = "4.15.1"
 junitParams = "1.1.1"
+googleTruth = "1.4.4"
+coroutinesTest = "1.10.2"
+turbine = "1.2.1"
 hilt = "2.57"
 activityCompose = "1.10.1"
 composeBom = "2025.07.00"
@@ -68,6 +71,10 @@ androidx-junit = { group = "androidx.test.ext", name = "junit", version.ref = "j
 robolectric = { group = "org.robolectric", name = "robolectric", version.ref = "robolectric" }
 mockk = { group = "io.mockk", name = "mockk", version.ref = "mockk" }
 junit-params = { group = "pl.pragmatists", name = "JUnitParams", version.ref = "junitParams" }
+room-testing = { group = "androidx.room", name = "room-testing", version.ref = "room" }
+google-truth = { group = "com.google.truth", name = "truth", version.ref = "googleTruth" }
+coroutines-test = { group = "org.jetbrains.kotlinx", name = "kotlinx-coroutines-test", version.ref = "coroutinesTest" }
+turbine = { group = "app.cash.turbine", name = "turbine", version.ref = "turbine" }
 
 [plugins]
 android-application = { id = "com.android.application", version.ref = "agp" }

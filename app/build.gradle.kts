@@ -61,6 +61,32 @@ ktlint {
     reporter(ReporterType.JSON)
     reporter(ReporterType.CHECKSTYLE)
   }
+
+  filter {
+    exclude { it.file.path.contains("src${File.separator}test") }
+  }
+}
+
+kover {
+  reports {
+    filters {
+      excludes {
+        packages(
+          names = listOf(
+            "dagger.hilt.internal.aggregatedroot.codegen",
+            "hilt_aggregated_deps",
+            "dev.johnnylewis.disctrackr.data.database",
+          ),
+        )
+        classes(
+          names = listOf(
+            "dev.johnnylewis.disctrackr.BuildConfig",
+            "dev.johnnylewis.disctrackr.MainApplication",
+          ),
+        )
+      }
+    }
+  }
 }
 
 dependencies {
@@ -110,4 +136,8 @@ dependencies {
   testImplementation(libs.robolectric)
   testImplementation(libs.mockk)
   testImplementation(libs.junit.params)
+  testImplementation(libs.room.testing)
+  testImplementation(libs.google.truth)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.turbine)
 }
