@@ -46,7 +46,6 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.johnnylewis.disctrackr.R
 import dev.johnnylewis.disctrackr.presentation.model.Country
 import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
-import dev.johnnylewis.disctrackr.presentation.model.DiscFormat
 import dev.johnnylewis.disctrackr.presentation.model.DropdownOption
 import dev.johnnylewis.disctrackr.presentation.util.CountryUtil
 import dev.johnnylewis.disctrackr.presentation.util.LightDarkPreview
@@ -109,16 +108,16 @@ private fun DiscFormContent(
       selected = state.format,
       options = listOf(
         DropdownOption(
-          value = DiscFormat.DVD,
-          title = DiscFormat.DVD.getName(),
+          value = DiscFormResult.DiscFormFormat.DVD,
+          title = DiscFormResult.DiscFormFormat.DVD.getName(),
         ),
         DropdownOption(
-          value = DiscFormat.BLU_RAY,
-          title = DiscFormat.BLU_RAY.getName(),
+          value = DiscFormResult.DiscFormFormat.BLU_RAY,
+          title = DiscFormResult.DiscFormFormat.BLU_RAY.getName(),
         ),
         DropdownOption(
-          value = DiscFormat.UHD,
-          title = DiscFormat.UHD.getName(),
+          value = DiscFormResult.DiscFormFormat.UHD,
+          title = DiscFormResult.DiscFormFormat.UHD.getName(),
         ),
       ),
       onValueChange = { onEvent(DiscFormViewModel.Event.FormatChanged(it)) },

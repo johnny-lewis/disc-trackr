@@ -155,14 +155,14 @@ private fun LoadedState(
       }
       items(
         items = state.discs,
-        key = { disc -> disc.id },
+        key = { disc -> disc.id ?: Unit },
       ) { disc ->
         Column(
           modifier = Modifier
             .animateItem(),
         ) {
           DiscListItem(
-            discItem = disc,
+            disc = disc,
             onDeletedClicked = {
               onEvent(DiscScreenViewModel.Event.DiscDeleted(disc.id))
             },
