@@ -76,6 +76,8 @@ kover {
             "dagger.hilt.internal.aggregatedroot.codegen",
             "hilt_aggregated_deps",
             "dev.johnnylewis.disctrackr.data.database",
+            "dev.johnnylewis.disctrackr.di",
+            "dev.johnnylewis.disctrackr.domain.model",
           ),
         )
         classes(
