@@ -98,35 +98,37 @@ class DiscEntityMapperTestToDisc {
   }
 
   @Suppress("unused")
-  private fun dvdParameters(): Array<Any?> {
-    return arrayOf(
-      arrayOf<Any?>(null, emptyList<DiscFormat.DVD.Region>()),
-      arrayOf<Any?>("", emptyList<DiscFormat.DVD.Region>()),
-      arrayOf<Any?>("one", listOf(DiscFormat.DVD.Region.ONE)),
-      arrayOf<Any?>("two", listOf(DiscFormat.DVD.Region.TWO)),
-      arrayOf<Any?>("three", listOf(DiscFormat.DVD.Region.THREE)),
-      arrayOf<Any?>("four", listOf(DiscFormat.DVD.Region.FOUR)),
-      arrayOf<Any?>("five", listOf(DiscFormat.DVD.Region.FIVE)),
-      arrayOf<Any?>("six", listOf(DiscFormat.DVD.Region.SIX)),
-      arrayOf<Any?>("one,two,three,four,five", listOf(DiscFormat.DVD.Region.ONE, DiscFormat.DVD.Region.TWO, DiscFormat.DVD.Region.THREE, DiscFormat.DVD.Region.FOUR, DiscFormat.DVD.Region.FIVE)),
-      arrayOf<Any?>("one,two,three,four,five,six", listOf(DiscFormat.DVD.Region.ALL)),
-      arrayOf<Any?>("all", listOf(DiscFormat.DVD.Region.ALL)),
+  private fun dvdParameters(): Array<Any?> =
+    arrayOf(
+      arrayOf(null, emptyList<DiscFormat.DVD.Region>()),
+      arrayOf("", emptyList<DiscFormat.DVD.Region>()),
+      arrayOf("INVALID", emptyList<DiscFormat.DVD.Region>()),
+      arrayOf("one", listOf(DiscFormat.DVD.Region.ONE)),
+      arrayOf("two", listOf(DiscFormat.DVD.Region.TWO)),
+      arrayOf("three", listOf(DiscFormat.DVD.Region.THREE)),
+      arrayOf("four", listOf(DiscFormat.DVD.Region.FOUR)),
+      arrayOf("five", listOf(DiscFormat.DVD.Region.FIVE)),
+      arrayOf("six", listOf(DiscFormat.DVD.Region.SIX)),
+      arrayOf("one,two,three,four,five", listOf(DiscFormat.DVD.Region.ONE, DiscFormat.DVD.Region.TWO, DiscFormat.DVD.Region.THREE, DiscFormat.DVD.Region.FOUR, DiscFormat.DVD.Region.FIVE)),
+      arrayOf("one,two,three,four,five,six", listOf(DiscFormat.DVD.Region.ALL)),
+      arrayOf("all", listOf(DiscFormat.DVD.Region.ALL)),
+      arrayOf("INVALID,one,two", listOf(DiscFormat.DVD.Region.ONE, DiscFormat.DVD.Region.TWO))
     )
-  }
 
   @Suppress("unused")
-  private fun bluRayParameters(): Array<Any?> {
-    return arrayOf(
-      arrayOf<Any?>(null, emptyList<DiscFormat.BluRay.Region>()),
-      arrayOf<Any?>("", emptyList<DiscFormat.BluRay.Region>()),
-      arrayOf<Any?>("a", listOf(DiscFormat.BluRay.Region.A)),
-      arrayOf<Any?>("b", listOf(DiscFormat.BluRay.Region.B)),
-      arrayOf<Any?>("c", listOf(DiscFormat.BluRay.Region.C)),
-      arrayOf<Any?>("a,b", listOf(DiscFormat.BluRay.Region.A, DiscFormat.BluRay.Region.B)),
-      arrayOf<Any?>("a,c", listOf(DiscFormat.BluRay.Region.A, DiscFormat.BluRay.Region.C)),
-      arrayOf<Any?>("b,c", listOf(DiscFormat.BluRay.Region.B, DiscFormat.BluRay.Region.C)),
-      arrayOf<Any?>("a,b,c", listOf(DiscFormat.BluRay.Region.ALL)),
-      arrayOf<Any?>("all", listOf(DiscFormat.BluRay.Region.ALL)),
+  private fun bluRayParameters(): Array<Any?> =
+    arrayOf(
+      arrayOf(null, emptyList<DiscFormat.BluRay.Region>()),
+      arrayOf("", emptyList<DiscFormat.BluRay.Region>()),
+      arrayOf("INVALID", emptyList<DiscFormat.BluRay.Region>()),
+      arrayOf("a", listOf(DiscFormat.BluRay.Region.A)),
+      arrayOf("b", listOf(DiscFormat.BluRay.Region.B)),
+      arrayOf("c", listOf(DiscFormat.BluRay.Region.C)),
+      arrayOf("a,b", listOf(DiscFormat.BluRay.Region.A, DiscFormat.BluRay.Region.B)),
+      arrayOf("a,c", listOf(DiscFormat.BluRay.Region.A, DiscFormat.BluRay.Region.C)),
+      arrayOf("b,c", listOf(DiscFormat.BluRay.Region.B, DiscFormat.BluRay.Region.C)),
+      arrayOf("a,b,c", listOf(DiscFormat.BluRay.Region.ALL)),
+      arrayOf("all", listOf(DiscFormat.BluRay.Region.ALL)),
+      arrayOf("INVALID,a,b", listOf(DiscFormat.BluRay.Region.A, DiscFormat.BluRay.Region.B))
     )
-  }
 }

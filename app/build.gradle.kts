@@ -73,11 +73,25 @@ kover {
       excludes {
         packages(
           names = listOf(
+            // Hilt
             "dagger.hilt.internal.aggregatedroot.codegen",
             "hilt_aggregated_deps",
+            "dev.johnnylewis.disctrackr.presentation.Hilt_MainActivity",
+
+            // Data
             "dev.johnnylewis.disctrackr.data.database",
+
+            // DI
             "dev.johnnylewis.disctrackr.di",
+
+            // Domain
             "dev.johnnylewis.disctrackr.domain.model",
+
+            // Presentation
+            "dev.johnnylewis.disctrackr.presentation.component",
+            "dev.johnnylewis.disctrackr.presentation.model",
+            "dev.johnnylewis.disctrackr.presentation.screen",
+            "dev.johnnylewis.disctrackr.presentation.theme",
           ),
         )
         classes(
