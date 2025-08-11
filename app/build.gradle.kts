@@ -9,6 +9,7 @@ plugins {
   alias(libs.plugins.hilt)
   alias(libs.plugins.kotlin.serialization)
   alias(libs.plugins.ktlint)
+  alias(libs.plugins.kover)
 }
 
 android {
@@ -60,6 +61,34 @@ ktlint {
     reporter(ReporterType.JSON)
     reporter(ReporterType.CHECKSTYLE)
   }
+
+  filter {
+    exclude { it.file.path.contains("src${File.separator}test") }
+  }
+}
+
+kover {
+  reports {
+    filters {
+      excludes {
+        packages(
+          names = listOf(
+            "dagger.hilt.internal.aggregatedroot.codegen",
+            "hilt_aggregated_deps",
+            "dev.johnnylewis.disctrackr.data.database",
+            "dev.johnnylewis.disctrackr.di",
+            "dev.johnnylewis.disctrackr.domain.model",
+          ),
+        )
+        classes(
+          names = listOf(
+            "dev.johnnylewis.disctrackr.BuildConfig",
+            "dev.johnnylewis.disctrackr.MainApplication",
+          ),
+        )
+      }
+    }
+  }
 }
 
 dependencies {
@@ -105,6 +134,12 @@ dependencies {
 
   // Testing
   testImplementation(libs.junit)
-  androidTestImplementation(libs.androidx.junit)
-  androidTestImplementation(libs.androidx.espresso.core)
+  testImplementation(libs.androidx.junit)
+  testImplementation(libs.robolectric)
+  testImplementation(libs.mockk)
+  testImplementation(libs.junit.params)
+  testImplementation(libs.room.testing)
+  testImplementation(libs.google.truth)
+  testImplementation(libs.coroutines.test)
+  testImplementation(libs.turbine)
 }

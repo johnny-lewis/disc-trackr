@@ -27,6 +27,7 @@ class DataModule {
     appDatabase: AppDatabase,
   ): DatabaseRepositoryContract =
     DatabaseRepository(
+      appDatabase = appDatabase,
       discDao = appDatabase.discDao(),
     )
 }

@@ -118,6 +118,9 @@ class DiscScreenViewModel @Inject constructor(
     _filterFlow.value = _filterFlow.value.copy(distributor = distributor)
   }
 
+  private fun DiscFilter.hasFilters(): Boolean =
+    format != null || countryCode != null || distributor != null
+
   data class State(
     val subState: SubState = SubState.Initial,
     val discs: List<DiscItem> = emptyList(),
