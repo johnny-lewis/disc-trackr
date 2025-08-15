@@ -4,7 +4,7 @@ import dev.johnnylewis.disctrackr.presentation.model.Country
 
 fun buildCountry(
   name: String = "Australia",
-  code: String = "au",
+  code: String = "AU",
 ): Country =
   Country(
     name = name,
