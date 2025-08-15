@@ -254,6 +254,6 @@ private fun DiscImage(
 
 private fun Disc.getBottomText(): String =
   listOfNotNull(
-    countryCode?.let { CountryUtil.getCountryFromCode(it).name },
+    countryCode?.let { CountryUtil.getCountryFromCode(it)?.name },
     year?.toString(),
   ).joinToString(" / ")

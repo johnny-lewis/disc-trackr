@@ -23,11 +23,13 @@ object CountryUtil {
       }
       .sortedBy { it.name }
 
-  fun getFlag(isoCode: String): String =
-    isoCode.map { char ->
-      String(Character.toChars(char.code - ASCII_UPPERCASE_A + REGIONAL_BASE_CODE_POINT))
-    }.joinToString(separator = "")
+  fun getFlag(isoCode: String): String? =
+    takeIf { Locale.getISOCountries().contains(isoCode) }?.let {
+      isoCode.map { char ->
+        String(Character.toChars(char.code - ASCII_UPPERCASE_A + REGIONAL_BASE_CODE_POINT))
+      }.joinToString(separator = "")
+    }
 
-  fun getCountryFromCode(code: String): Country =
-    countryList.first { it.code == code }
+  fun getCountryFromCode(code: String): Country? =
+    countryList.firstOrNull { it.code == code }
 }

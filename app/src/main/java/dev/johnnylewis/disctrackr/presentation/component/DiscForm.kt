@@ -219,13 +219,7 @@ private fun CountrySelector(
     onValueChange = {},
     readOnly = true,
     placeholder = { Text(text = stringResource(R.string.disc_screen_form_country_placeholder)) },
-    leadingIcon = selectedCountry?.let {
-      {
-        Text(
-          text = CountryUtil.getFlag(isoCode = selectedCountry.code),
-        )
-      }
-    },
+    leadingIcon = getFlagIconText(selectedCountry),
     trailingIcon = {
       if (selectedCountry != null) {
         Icon(
@@ -312,9 +306,7 @@ private fun CountryBottomSheetContent(
         horizontalArrangement = Arrangement.spacedBy(16.dp),
         verticalAlignment = Alignment.CenterVertically,
       ) {
-        Text(
-          text = CountryUtil.getFlag(isoCode = country.code),
-        )
+        getFlagIconText(country = country)?.invoke()
         Text(
           text = country.name,
           style = MaterialTheme.typography.bodyLarge,
@@ -324,6 +316,14 @@ private fun CountryBottomSheetContent(
     }
   }
 }
+
+@Composable
+private fun getFlagIconText(country: Country?): (@Composable () -> Unit)? =
+  CountryUtil.getFlag(country?.code ?: "")?.let { flag ->
+    {
+      Text(text = flag)
+    }
+  }
 
 @LightDarkPreview
 @Composable
