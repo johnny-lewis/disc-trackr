@@ -94,6 +94,8 @@ kover {
             "dev.johnnylewis.disctrackr.MainApplication",
             "dev.johnnylewis.disctrackr.presentation.MainActivity",
             "dev.johnnylewis.disctrackr.presentation.NavigationGraph*",
+            "dev.johnnylewis.disctrackr.presentation.util.PreviewHelper",
+            "dev.johnnylewis.disctrackr.presentation.util.ModifierUtilKt",
           ),
         )
       }

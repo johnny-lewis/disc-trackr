@@ -43,13 +43,13 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import dev.johnnylewis.disctrackr.R
+import dev.johnnylewis.disctrackr.domain.model.Disc
 import dev.johnnylewis.disctrackr.presentation.component.DiscForm
 import dev.johnnylewis.disctrackr.presentation.component.DiscListFilters
 import dev.johnnylewis.disctrackr.presentation.component.DiscListItem
 import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
 import dev.johnnylewis.disctrackr.presentation.util.LightDarkPreview
 import dev.johnnylewis.disctrackr.presentation.util.PreviewHelper
-import dev.johnnylewis.disctrackr.presentation.util.isLastIndex
 import dev.johnnylewis.disctrackr.presentation.util.screenSize
 import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscScreenViewModel
 import kotlinx.coroutines.launch
@@ -349,6 +349,9 @@ private fun ScrollTopButton(
     }
   }
 }
+
+private fun List<Disc>.isLastIndex(id: Int?): Boolean =
+  indexOfLast { it.id == id } == indices.last
 
 @LightDarkPreview
 @Composable

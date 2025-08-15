@@ -11,7 +11,7 @@ fun buildDisc(
   countryCode: String? = "au",
   distributor: String = "DISTRIBUTOR",
   year: Int? = 2025,
-  blurayId: String = "BLURAY_ID",
+  blurayId: String? = "BLURAY_ID",
 ): Disc =
   Disc(
     id = id,
