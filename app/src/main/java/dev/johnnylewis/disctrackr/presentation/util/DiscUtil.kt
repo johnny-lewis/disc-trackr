@@ -1,11 +1,11 @@
 package dev.johnnylewis.disctrackr.presentation.util
 
-import dev.johnnylewis.disctrackr.presentation.model.DiscFormat
-import dev.johnnylewis.disctrackr.presentation.model.DiscItem
-import dev.johnnylewis.disctrackr.presentation.model.DiscRegion
+import dev.johnnylewis.disctrackr.domain.model.Disc
 
-fun DiscFormat.hasRegions(): Boolean =
-  DiscRegion.entries.any { it.format == this }
+private const val BLU_RAY_IMAGE_URL =
+  "https://images.static-bluray.com/movies/covers/{{id}}_front.jpg"
 
-fun List<DiscItem>.isLastIndex(id: Int): Boolean =
-  indexOfLast { it.id == id } == indices.last
+fun Disc.getImageUrl(): String? =
+  imageUrl ?: blurayId?.let {
+    BLU_RAY_IMAGE_URL.replace("{{id}}", blurayId)
+  }

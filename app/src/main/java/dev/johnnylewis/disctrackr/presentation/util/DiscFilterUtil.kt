@@ -1,15 +1,19 @@
 package dev.johnnylewis.disctrackr.presentation.util
 
+import dev.johnnylewis.disctrackr.domain.model.Disc
+import dev.johnnylewis.disctrackr.domain.model.DiscFormat
 import dev.johnnylewis.disctrackr.presentation.model.Country
 import dev.johnnylewis.disctrackr.presentation.model.DiscFilterState
-import dev.johnnylewis.disctrackr.presentation.model.DiscFormat
-import dev.johnnylewis.disctrackr.presentation.model.DiscItem
 import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscScreenViewModel
 
-fun DiscFilterState.update(discs: List<DiscItem>): DiscFilterState {
-  val formats = discs.map { it.format }.distinct().sortedBy { it.name }
-  val countries = discs.mapNotNull { it.country }.distinct().sortedBy { it.name }
-  val distributors = discs.map { it.distributor }.filterNot { it.isBlank() }.distinct().sorted()
+fun DiscFilterState.update(discs: List<Disc>): DiscFilterState {
+  val formats = discs.map { it.format }.distinct().sortedBy { it::class.simpleName }
+  val countries = discs
+    .mapNotNull { disc ->
+      disc.countryCode?.let { CountryUtil.getCountryFromCode(it) }
+    }.distinct().sortedBy { it.name }
+  val distributors = discs
+    .mapNotNull { it.distributor }.filterNot { it.isBlank() }.distinct().sorted()
 
   return copy(
     selection = selection.copy(

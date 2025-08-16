@@ -14,16 +14,16 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import dev.johnnylewis.disctrackr.R
-import dev.johnnylewis.disctrackr.presentation.model.DiscFormat
-import dev.johnnylewis.disctrackr.presentation.model.DiscRegion
+import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
+import dev.johnnylewis.disctrackr.presentation.util.getRegions
 import dev.johnnylewis.disctrackr.presentation.util.hasRegions
 
 @Composable
 fun DiscRegionSelect(
   modifier: Modifier = Modifier,
-  selectedFormat: DiscFormat,
-  selectedRegions: Set<DiscRegion>,
-  onRegionSelected: (DiscRegion, Boolean) -> Unit,
+  selectedFormat: DiscFormResult.DiscFormFormat,
+  selectedRegions: Set<DiscFormResult.DiscFormRegion>,
+  onRegionSelected: (DiscFormResult.DiscFormRegion, Boolean) -> Unit,
 ) {
   if (!selectedFormat.hasRegions()) {
     return
@@ -65,26 +65,25 @@ fun DiscRegionSelect(
   }
 }
 
-private fun Set<DiscRegion>.isOptionDisabled(region: DiscRegion): Boolean =
+private fun Set<DiscFormResult.DiscFormRegion>.isOptionDisabled(
+  region: DiscFormResult.DiscFormRegion,
+): Boolean =
   any {
-    it == DiscRegion.ALL || it == DiscRegion.ZERO
-  } && region != DiscRegion.ALL && region != DiscRegion.ZERO
-
-private fun DiscFormat.getRegions(): List<DiscRegion> =
-  DiscRegion.entries.filter { it.format == this }
+    it == DiscFormResult.DiscFormRegion.ALL || it == DiscFormResult.DiscFormRegion.ZERO
+  } && region != DiscFormResult.DiscFormRegion.ALL && region != DiscFormResult.DiscFormRegion.ZERO
 
 @Composable
-private fun DiscRegion.getTitle(): String =
+private fun DiscFormResult.DiscFormRegion.getTitle(): String =
   when (this) {
-    DiscRegion.ZERO -> stringResource(R.string.disc_screen_form_region_zero)
-    DiscRegion.ONE -> stringResource(R.string.disc_screen_form_region_one)
-    DiscRegion.TWO -> stringResource(R.string.disc_screen_form_region_two)
-    DiscRegion.THREE -> stringResource(R.string.disc_screen_form_region_three)
-    DiscRegion.FOUR -> stringResource(R.string.disc_screen_form_region_four)
-    DiscRegion.FIVE -> stringResource(R.string.disc_screen_form_region_five)
-    DiscRegion.SIX -> stringResource(R.string.disc_screen_form_region_six)
-    DiscRegion.A -> stringResource(R.string.disc_screen_form_region_a)
-    DiscRegion.B -> stringResource(R.string.disc_screen_form_region_b)
-    DiscRegion.C -> stringResource(R.string.disc_screen_form_region_c)
-    DiscRegion.ALL -> stringResource(R.string.disc_screen_form_region_all)
+    DiscFormResult.DiscFormRegion.ZERO -> stringResource(R.string.disc_screen_form_region_zero)
+    DiscFormResult.DiscFormRegion.ONE -> stringResource(R.string.disc_screen_form_region_one)
+    DiscFormResult.DiscFormRegion.TWO -> stringResource(R.string.disc_screen_form_region_two)
+    DiscFormResult.DiscFormRegion.THREE -> stringResource(R.string.disc_screen_form_region_three)
+    DiscFormResult.DiscFormRegion.FOUR -> stringResource(R.string.disc_screen_form_region_four)
+    DiscFormResult.DiscFormRegion.FIVE -> stringResource(R.string.disc_screen_form_region_five)
+    DiscFormResult.DiscFormRegion.SIX -> stringResource(R.string.disc_screen_form_region_six)
+    DiscFormResult.DiscFormRegion.A -> stringResource(R.string.disc_screen_form_region_a)
+    DiscFormResult.DiscFormRegion.B -> stringResource(R.string.disc_screen_form_region_b)
+    DiscFormResult.DiscFormRegion.C -> stringResource(R.string.disc_screen_form_region_c)
+    DiscFormResult.DiscFormRegion.ALL -> stringResource(R.string.disc_screen_form_region_all)
   }

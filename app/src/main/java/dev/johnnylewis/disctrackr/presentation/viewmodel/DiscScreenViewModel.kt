@@ -5,17 +5,15 @@ import androidx.lifecycle.viewModelScope
 import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.johnnylewis.disctrackr.domain.model.Disc
 import dev.johnnylewis.disctrackr.domain.model.DiscFilter
+import dev.johnnylewis.disctrackr.domain.model.DiscFormat
 import dev.johnnylewis.disctrackr.domain.repository.DatabaseRepositoryContract
 import dev.johnnylewis.disctrackr.domain.usecase.GetDiscsUseCase
 import dev.johnnylewis.disctrackr.presentation.mapper.mapToDisc
-import dev.johnnylewis.disctrackr.presentation.mapper.mapToDomainClass
-import dev.johnnylewis.disctrackr.presentation.mapper.mapToPresentation
 import dev.johnnylewis.disctrackr.presentation.model.Country
 import dev.johnnylewis.disctrackr.presentation.model.DiscFilterState
 import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
-import dev.johnnylewis.disctrackr.presentation.model.DiscFormat
-import dev.johnnylewis.disctrackr.presentation.model.DiscItem
 import dev.johnnylewis.disctrackr.presentation.util.update
 import dev.johnnylewis.disctrackr.presentation.util.withFilter
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -38,22 +36,18 @@ class DiscScreenViewModel @Inject constructor(
       .onSuccess { discsFlow ->
         viewModelScope.launch {
           discsFlow.collect { discs ->
-            discs.mapToPresentation().let { presentationDiscs ->
-              if (presentationDiscs.isEmpty()) {
-                if (_filterFlow.value.hasFilters()) {
-                  _filterFlow.value = DiscFilter()
-                }
-              }
-              _state.value = _state.value.copy(
-                subState = if (presentationDiscs.isEmpty()) {
-                  State.SubState.Empty
-                } else {
-                  State.SubState.Loaded
-                },
-                discs = presentationDiscs,
-                filterState = _state.value.filterState.update(presentationDiscs),
-              )
+            if (discs.isEmpty() && _filterFlow.value.hasFilters()) {
+              _filterFlow.value = DiscFilter()
             }
+            _state.value = _state.value.copy(
+              subState = if (discs.isEmpty()) {
+                State.SubState.Empty
+              } else {
+                State.SubState.Loaded
+              },
+              discs = discs,
+              filterState = _state.value.filterState.update(discs),
+            )
           }
         }
       }.onFailure {
@@ -105,7 +99,7 @@ class DiscScreenViewModel @Inject constructor(
 
   private fun onFormatFilterChanged(format: DiscFormat?) {
     _state.value = _state.value.withFilter(format)
-    _filterFlow.value = _filterFlow.value.copy(format = format?.mapToDomainClass())
+    _filterFlow.value = _filterFlow.value.copy(format = format?.let { format::class })
   }
 
   private fun onCountryFilterChanged(country: Country?) {
@@ -123,7 +117,7 @@ class DiscScreenViewModel @Inject constructor(
 
   data class State(
     val subState: SubState = SubState.Initial,
-    val discs: List<DiscItem> = emptyList(),
+    val discs: List<Disc> = emptyList(),
     val isDiscFormExpanded: Boolean = false,
     val shouldClearDiscFormState: Boolean = false,
     val filterState: DiscFilterState = DiscFilterState(),

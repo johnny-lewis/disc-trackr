@@ -5,10 +5,9 @@ import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.johnnylewis.disctrackr.presentation.model.Country
 import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
-import dev.johnnylewis.disctrackr.presentation.model.DiscFormat
-import dev.johnnylewis.disctrackr.presentation.model.DiscRegion
 import dev.johnnylewis.disctrackr.presentation.util.CountryUtil
 import dev.johnnylewis.disctrackr.presentation.util.hasRegions
+import dev.johnnylewis.disctrackr.presentation.util.isAllRegions
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -81,7 +80,7 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
     _state.value = _state.value.copy(name = name)
   }
 
-  private fun onFormatChanged(format: DiscFormat) {
+  private fun onFormatChanged(format: DiscFormResult.DiscFormFormat) {
     if (format != _state.value.format) {
       _state.value = _state.value.copy(
         format = format,
@@ -90,10 +89,10 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
     }
   }
 
-  private fun onRegionSelected(region: DiscRegion, selected: Boolean) {
+  private fun onRegionSelected(region: DiscFormResult.DiscFormRegion, selected: Boolean) {
     _state.value = _state.value.copy(
       regions = if (selected) {
-        if (region == DiscRegion.ALL || region == DiscRegion.ZERO) {
+        if (region.isAllRegions()) {
           setOf(region)
         } else {
           _state.value.regions + region
@@ -121,8 +120,8 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
     val countryFilterText: String = "",
     val selectedCountry: Country? = null,
     val name: String = "",
-    val format: DiscFormat = DiscFormat.BLU_RAY,
-    val regions: Set<DiscRegion> = emptySet(),
+    val format: DiscFormResult.DiscFormFormat = DiscFormResult.DiscFormFormat.BLU_RAY,
+    val regions: Set<DiscFormResult.DiscFormRegion> = emptySet(),
     val distributor: String = "",
     val year: String = "",
     val blurayId: String = "",
@@ -145,8 +144,11 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
   sealed interface Event {
     data object ClearState : Event
     data class NameChanged(val name: String) : Event
-    data class FormatChanged(val format: DiscFormat) : Event
-    data class RegionSelected(val region: DiscRegion, val selected: Boolean) : Event
+    data class FormatChanged(val format: DiscFormResult.DiscFormFormat) : Event
+    data class RegionSelected(
+      val region: DiscFormResult.DiscFormRegion,
+      val selected: Boolean,
+    ) : Event
     data class DistributorChanged(val distributor: String) : Event
     data class YearChanged(val year: String) : Event
     data class BlurayIdChanged(val id: String) : Event

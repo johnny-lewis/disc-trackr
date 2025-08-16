@@ -78,12 +78,24 @@ kover {
             "dev.johnnylewis.disctrackr.data.database",
             "dev.johnnylewis.disctrackr.di",
             "dev.johnnylewis.disctrackr.domain.model",
+            "dev.johnnylewis.disctrackr.presentation.component",
+            "dev.johnnylewis.disctrackr.presentation.model",
+            "dev.johnnylewis.disctrackr.presentation.screen",
+            "dev.johnnylewis.disctrackr.presentation.theme",
           ),
         )
         classes(
           names = listOf(
+            "*Hilt_*",
+            "*HiltModules*",
+            "*_Factory",
+            "*\$InstanceHolder",
             "dev.johnnylewis.disctrackr.BuildConfig",
             "dev.johnnylewis.disctrackr.MainApplication",
+            "dev.johnnylewis.disctrackr.presentation.MainActivity",
+            "dev.johnnylewis.disctrackr.presentation.NavigationGraph*",
+            "dev.johnnylewis.disctrackr.presentation.util.PreviewHelper",
+            "dev.johnnylewis.disctrackr.presentation.util.ModifierUtilKt",
           ),
         )
       }

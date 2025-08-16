@@ -6,7 +6,7 @@ data class Disc(
   val imageUrl: String?,
   val format: DiscFormat,
   val countryCode: String?,
-  val distributor: String,
+  val distributor: String?,
   val year: Int?,
-  val blurayId: String,
+  val blurayId: String?,
 )

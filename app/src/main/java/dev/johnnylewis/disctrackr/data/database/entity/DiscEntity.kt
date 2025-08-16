@@ -14,8 +14,8 @@ data class DiscEntity(
   val format: String,
   val region: String?,
   val countryCode: String?,
-  val distributor: String,
+  val distributor: String?,
   val year: Int?,
-  val blurayId: String,
+  val blurayId: String?,
   val titleSort: String,
 )

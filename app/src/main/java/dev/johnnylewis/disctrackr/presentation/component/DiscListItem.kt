@@ -47,13 +47,15 @@ import coil3.compose.AsyncImagePainter
 import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
 import dev.johnnylewis.disctrackr.R
-import dev.johnnylewis.disctrackr.presentation.model.DiscItem
+import dev.johnnylewis.disctrackr.domain.model.Disc
+import dev.johnnylewis.disctrackr.presentation.util.CountryUtil
+import dev.johnnylewis.disctrackr.presentation.util.getImageUrl
 import dev.johnnylewis.disctrackr.presentation.util.noRippleClickable
 import kotlinx.coroutines.launch
 
 @Composable
 fun DiscListItem(
-  discItem: DiscItem,
+  disc: Disc,
   onDeletedClicked: () -> Unit,
 ) {
   Box {
@@ -88,7 +90,7 @@ fun DiscListItem(
           modifier = Modifier
             .fillParentMaxWidth()
             .onSizeChanged { itemHeight = it.height },
-          discItem = discItem,
+          disc = disc,
         )
       }
       item {
@@ -156,7 +158,7 @@ private fun BehindButtonRow(
 @Composable
 private fun DiscRow(
   modifier: Modifier = Modifier,
-  discItem: DiscItem,
+  disc: Disc,
 ) {
   Row(
     modifier = modifier
@@ -165,22 +167,22 @@ private fun DiscRow(
     verticalAlignment = Alignment.CenterVertically,
   ) {
     DiscImage(
-      imageUrl = discItem.imageUrl,
+      imageUrl = disc.getImageUrl(),
     )
     Column(
       verticalArrangement = Arrangement.spacedBy(2.dp),
     ) {
       Text(
-        text = discItem.title,
+        text = disc.title,
         style = MaterialTheme.typography.bodyLarge,
         color = MaterialTheme.colorScheme.onSurfaceVariant,
         fontWeight = FontWeight.SemiBold,
         maxLines = 2,
         overflow = TextOverflow.Ellipsis,
       )
-      if (discItem.distributor.isNotBlank()) {
+      if (disc.distributor?.isNotBlank() ?: false) {
         Text(
-          text = discItem.distributor,
+          text = disc.distributor,
           style = MaterialTheme.typography.bodyMedium,
           color = MaterialTheme.colorScheme.onBackground,
           fontStyle = FontStyle.Italic,
@@ -189,7 +191,7 @@ private fun DiscRow(
         )
       }
       Text(
-        text = discItem.getBottomText(),
+        text = disc.getBottomText(),
         style = MaterialTheme.typography.bodyMedium,
         color = MaterialTheme.colorScheme.onBackground,
         fontStyle = FontStyle.Italic,
@@ -250,6 +252,8 @@ private fun DiscImage(
   }
 }
 
-private fun DiscItem.getBottomText(): String =
-  listOfNotNull(country?.name, year?.toString())
-    .joinToString(" / ")
+private fun Disc.getBottomText(): String =
+  listOfNotNull(
+    countryCode?.let { CountryUtil.getCountryFromCode(it)?.name },
+    year?.toString(),
+  ).joinToString(" / ")

@@ -1,5 +1,7 @@
 package dev.johnnylewis.disctrackr.presentation.model
 
+import dev.johnnylewis.disctrackr.domain.model.DiscFormat
+
 data class DiscFilterState(
   val selection: Selection = Selection(),
   val options: Options = Options(),
