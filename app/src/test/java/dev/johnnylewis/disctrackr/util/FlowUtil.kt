@@ -1,6 +1,7 @@
 package dev.johnnylewis.disctrackr.util
 
 import app.cash.turbine.TurbineTestContext
+import app.cash.turbine.test
 import com.github.michaelbull.result.Result
 import com.github.michaelbull.result.unwrap
 import com.google.common.truth.Truth.assertThat
@@ -15,3 +16,9 @@ suspend fun TurbineTestContext<*>.finishFlow() {
   cancel()
   ensureAllEventsConsumed()
 }
+
+suspend fun <T> Flow<T>.testAndSkipFirst(validate: suspend TurbineTestContext<T>.() -> Unit) =
+  test {
+    skipItems(1)
+    validate()
+  }

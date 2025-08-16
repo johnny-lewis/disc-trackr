@@ -2,6 +2,7 @@ package dev.johnnylewis.disctrackr.presentation.util
 
 import com.google.common.truth.Truth.assertThat
 import dev.johnnylewis.disctrackr.presentation.model.Country
+import dev.johnnylewis.disctrackr.util.TestConst.TOTAL_COUNTRIES
 import junitparams.JUnitParamsRunner
 import junitparams.Parameters
 import junitparams.naming.TestCaseName
@@ -12,7 +13,7 @@ import org.junit.runner.RunWith
 class CountryUtilTest {
   @Test
   fun `Given list of countries from device locale, when getting country list, then it returns all countries other than those excluded, and sorted by name`() {
-    assertThat(CountryUtil.countryList.size).isEqualTo(247)
+    assertThat(CountryUtil.countryList.size).isEqualTo(TOTAL_COUNTRIES)
     assertThat(CountryUtil.countryList).isInOrder { country1, country2 ->
       (country1 as Country).name.compareTo((country2 as Country).name)
     }
