@@ -4,7 +4,7 @@ import dev.johnnylewis.disctrackr.domain.model.Disc
 import dev.johnnylewis.disctrackr.domain.model.DiscFormat
 import dev.johnnylewis.disctrackr.presentation.model.Country
 import dev.johnnylewis.disctrackr.presentation.model.DiscFilterState
-import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscScreenViewModel
+import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscListScreenViewModel
 
 fun DiscFilterState.update(discs: List<Disc>): DiscFilterState {
   val formats = discs.map { it.format }.distinct().sortedBy { it::class.simpleName }
@@ -29,7 +29,7 @@ fun DiscFilterState.update(discs: List<Disc>): DiscFilterState {
   )
 }
 
-fun DiscScreenViewModel.State.withFilter(format: DiscFormat?): DiscScreenViewModel.State =
+fun DiscListScreenViewModel.State.withFilter(format: DiscFormat?): DiscListScreenViewModel.State =
   copy(
     filterState = filterState.copy(
       selection = filterState.selection.copy(
@@ -38,7 +38,7 @@ fun DiscScreenViewModel.State.withFilter(format: DiscFormat?): DiscScreenViewMod
     ),
   )
 
-fun DiscScreenViewModel.State.withFilter(country: Country?): DiscScreenViewModel.State =
+fun DiscListScreenViewModel.State.withFilter(country: Country?): DiscListScreenViewModel.State =
   copy(
     filterState = filterState.copy(
       selection = filterState.selection.copy(
@@ -47,7 +47,7 @@ fun DiscScreenViewModel.State.withFilter(country: Country?): DiscScreenViewModel
     ),
   )
 
-fun DiscScreenViewModel.State.withFilter(distributor: String?): DiscScreenViewModel.State =
+fun DiscListScreenViewModel.State.withFilter(distributor: String?): DiscListScreenViewModel.State =
   copy(
     filterState = filterState.copy(
       selection = filterState.selection.copy(

@@ -4,6 +4,7 @@ import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.slideInVertically
 import androidx.compose.animation.slideOutVertically
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -51,13 +52,13 @@ import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
 import dev.johnnylewis.disctrackr.presentation.util.LightDarkPreview
 import dev.johnnylewis.disctrackr.presentation.util.PreviewHelper
 import dev.johnnylewis.disctrackr.presentation.util.screenSize
-import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscScreenViewModel
+import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscListScreenViewModel
 import kotlinx.coroutines.launch
 
 @Composable
-fun DiscScreen(viewModel: DiscScreenViewModel) {
+fun DiscListScreen(viewModel: DiscListScreenViewModel) {
   val state by viewModel.state.collectAsState()
-  DiscScreenContent(
+  DiscListScreenContent(
     state = state,
     onEvent = viewModel::onEvent,
   )
@@ -65,43 +66,43 @@ fun DiscScreen(viewModel: DiscScreenViewModel) {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun DiscScreenContent(
-  state: DiscScreenViewModel.State,
-  onEvent: (DiscScreenViewModel.Event) -> Unit,
+private fun DiscListScreenContent(
+  state: DiscListScreenViewModel.State,
+  onEvent: (DiscListScreenViewModel.Event) -> Unit,
 ) {
   when (state.subState) {
-    DiscScreenViewModel.State.SubState.Initial ->
+    DiscListScreenViewModel.State.SubState.Initial ->
       InitialState()
-    DiscScreenViewModel.State.SubState.Empty ->
+    DiscListScreenViewModel.State.SubState.Empty ->
       EmptyState(
         onEvent = onEvent,
       )
-    DiscScreenViewModel.State.SubState.Loaded ->
+    DiscListScreenViewModel.State.SubState.Loaded ->
       LoadedState(
         state = state,
         onEvent = onEvent,
       )
-    DiscScreenViewModel.State.SubState.Error ->
+    DiscListScreenViewModel.State.SubState.Error ->
       ErrorState()
   }
 
   BottomSheet(
     isSheetExpanded = state.isDiscFormExpanded,
     shouldClearState = state.shouldClearDiscFormState,
-    onStateCleared = { onEvent(DiscScreenViewModel.Event.DiscFormStateCleared) },
+    onStateCleared = { onEvent(DiscListScreenViewModel.Event.DiscFormStateCleared) },
     onDismiss = {
-      onEvent(DiscScreenViewModel.Event.DiscFormExpandedChanged(isExpanded = false))
+      onEvent(DiscListScreenViewModel.Event.DiscFormExpandedChanged(isExpanded = false))
     },
     onSubmit = { result ->
-      onEvent(DiscScreenViewModel.Event.DiscFormSubmitted(result))
+      onEvent(DiscListScreenViewModel.Event.DiscFormSubmitted(result))
     },
   )
 }
 
 @Composable
 private fun LoadedState(
-  state: DiscScreenViewModel.State,
-  onEvent: (DiscScreenViewModel.Event) -> Unit,
+  state: DiscListScreenViewModel.State,
+  onEvent: (DiscListScreenViewModel.Event) -> Unit,
 ) {
   val coroutineScope = rememberCoroutineScope()
   val listState = rememberLazyListState()
@@ -134,7 +135,7 @@ private fun LoadedState(
           )
           IconButton(
             onClick = {
-              onEvent(DiscScreenViewModel.Event.DiscFormExpandedChanged(isExpanded = true))
+              onEvent(DiscListScreenViewModel.Event.DiscFormExpandedChanged(isExpanded = true))
             },
           ) {
             Icon(
@@ -159,12 +160,15 @@ private fun LoadedState(
       ) { disc ->
         Column(
           modifier = Modifier
-            .animateItem(),
+            .animateItem()
+            .clickable {
+              onEvent(DiscListScreenViewModel.Event.DiscPressed(disc))
+            },
         ) {
           DiscListItem(
             disc = disc,
             onDeletedClicked = {
-              onEvent(DiscScreenViewModel.Event.DiscDeleted(disc.id))
+              onEvent(DiscListScreenViewModel.Event.DiscDeleted(disc.id))
             },
           )
           if (!state.discs.isLastIndex(disc.id)) {
@@ -221,7 +225,7 @@ private fun InitialState() {
 
 @Composable
 private fun EmptyState(
-  onEvent: (DiscScreenViewModel.Event) -> Unit,
+  onEvent: (DiscListScreenViewModel.Event) -> Unit,
 ) {
   Box(
     modifier = Modifier
@@ -248,7 +252,7 @@ private fun EmptyState(
           .padding(top = 8.dp),
         shape = RoundedCornerShape(6.dp),
         onClick = {
-          onEvent(DiscScreenViewModel.Event.DiscFormExpandedChanged(isExpanded = true))
+          onEvent(DiscListScreenViewModel.Event.DiscFormExpandedChanged(isExpanded = true))
         },
       ) {
         Text(

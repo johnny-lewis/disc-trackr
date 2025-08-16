@@ -3,6 +3,7 @@ package dev.johnnylewis.disctrackr.data.repository
 import androidx.room.Room
 import androidx.test.core.app.ApplicationProvider
 import app.cash.turbine.test
+import com.github.michaelbull.result.unwrap
 import com.google.common.truth.Truth.assertThat
 import dev.johnnylewis.disctrackr.data.database.AppDatabase
 import dev.johnnylewis.disctrackr.data.database.dao.DiscDao
@@ -122,6 +123,36 @@ class DatabaseRepositoryTest {
         assertThat(awaitItem()).isEqualTo(discs.filterNot { it.id == 1 })
 
         finishFlow()
+      }
+    }
+
+  @Test
+  fun `Given empty database, when getting disc, then it returns flow of null`() =
+    testScope.runTest {
+      with(repository.getDisc(1)) {
+        assertThat(isOk).isTrue()
+        assertThat(unwrap()).isNull()
+      }
+    }
+
+  @Test
+  fun `Given database with no matching disc, when getting disc, then it returns flow of null`() =
+    testScope.runTest {
+      repository.addDisc(buildDisc(id = 1))
+      with(repository.getDisc(2)) {
+        assertThat(isOk).isTrue()
+        assertThat(unwrap()).isNull()
+      }
+    }
+
+  @Test
+  fun `Given database with matching disc, when getting disc, then it returns flow of that disc`() =
+    testScope.runTest {
+      val disc = buildDisc(id = 1)
+      repository.addDisc(disc)
+      with(repository.getDisc(1)) {
+        assertThat(isOk).isTrue()
+        assertThat(unwrap()).isEqualTo(disc)
       }
     }
 }
