@@ -1,5 +1,6 @@
 package dev.johnnylewis.disctrackr.presentation.viewmodel
 
+import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -47,7 +48,7 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
       is Event.RegionSelected -> onRegionSelected(event.region, event.selected)
       is Event.DistributorChanged -> onDistributorChanged(event.distributor)
       is Event.YearChanged -> onYearChanged(event.year)
-      is Event.BlurayIdChanged -> onBlurayIdChanged(event.id)
+      is Event.BluRayIdChanged -> onBluRayIdChanged(event.id)
       is Event.CountrySelected -> onCountrySelected(event.country)
       Event.CountryCleared -> onCountryCleared()
       Event.CountryFilterCleared -> onCountryFilterCleared()
@@ -108,11 +109,17 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
   }
 
   private fun onYearChanged(year: String) {
-    _state.value = _state.value.copy(year = year)
+    if (year.isDigitsOnly()) {
+      _state.value = _state.value.copy(year = year)
+    }
   }
 
-  private fun onBlurayIdChanged(id: String) {
-    _state.value = _state.value.copy(blurayId = id)
+  private fun onBluRayIdChanged(id: String) {
+    if (id.isDigitsOnly()) {
+      _state.value = _state.value.copy(blurayId = id)
+    } else if (id.matches(BLU_RAY_URL_FORMAT)) {
+      _state.value = _state.value.copy(blurayId = BLU_RAY_URL_ID.find(id)?.value ?: "")
+    }
   }
 
   data class State(
@@ -151,10 +158,15 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
     ) : Event
     data class DistributorChanged(val distributor: String) : Event
     data class YearChanged(val year: String) : Event
-    data class BlurayIdChanged(val id: String) : Event
+    data class BluRayIdChanged(val id: String) : Event
     data class CountrySelected(val country: Country) : Event
     data object CountryCleared : Event
     data object CountryFilterCleared : Event
     data class CountryFilterChanged(val filter: String) : Event
+  }
+
+  private companion object {
+    val BLU_RAY_URL_FORMAT = "^https://www\\.blu-ray\\.com/movies/[\\w-]+/\\d+/?$".toRegex()
+    val BLU_RAY_URL_ID = "\\d+(?=/?$)".toRegex()
   }
 }

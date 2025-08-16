@@ -58,7 +58,7 @@ class DiscFormViewModelTest {
   @Test
   fun `Given bluray id changed event triggered, when listening to disc form state flow, then it updates bluray id`() =
     testScope.runTest {
-      viewModel.onEvent(DiscFormViewModel.Event.BlurayIdChanged("12345"))
+      viewModel.onEvent(DiscFormViewModel.Event.BluRayIdChanged("12345"))
       viewModel.state.test {
         assertThat(awaitItem().blurayId).isEqualTo("12345")
 
@@ -235,7 +235,7 @@ class DiscFormViewModelTest {
       viewModel.onEvent(DiscFormViewModel.Event.RegionSelected(DiscFormResult.DiscFormRegion.FOUR, true))
       viewModel.onEvent(DiscFormViewModel.Event.DistributorChanged("DISTRIBUTOR"))
       viewModel.onEvent(DiscFormViewModel.Event.YearChanged("2025"))
-      viewModel.onEvent(DiscFormViewModel.Event.BlurayIdChanged("12345"))
+      viewModel.onEvent(DiscFormViewModel.Event.BluRayIdChanged("12345"))
       viewModel.onEvent(DiscFormViewModel.Event.CountrySelected(buildCountry()))
       viewModel.onEvent(DiscFormViewModel.Event.CountryFilterChanged("New"))
       viewModel.state.test {

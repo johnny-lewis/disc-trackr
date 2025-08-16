@@ -20,6 +20,7 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import javax.inject.Inject
+import kotlin.reflect.KClass
 
 @HiltViewModel
 class DiscScreenViewModel @Inject constructor(
@@ -97,9 +98,9 @@ class DiscScreenViewModel @Inject constructor(
     }
   }
 
-  private fun onFormatFilterChanged(format: DiscFormat?) {
+  private fun onFormatFilterChanged(format: KClass<out DiscFormat>?) {
     _state.value = _state.value.withFilter(format)
-    _filterFlow.value = _filterFlow.value.copy(format = format?.let { format::class })
+    _filterFlow.value = _filterFlow.value.copy(format = format)
   }
 
   private fun onCountryFilterChanged(country: Country?) {
@@ -135,7 +136,7 @@ class DiscScreenViewModel @Inject constructor(
     data object DiscFormStateCleared : Event
     data class DiscFormSubmitted(val result: DiscFormResult) : Event
     data class DiscDeleted(val id: Int?) : Event
-    data class FormatFilterChanged(val format: DiscFormat?) : Event
+    data class FormatFilterChanged(val format: KClass<out DiscFormat>?) : Event
     data class CountryFilterChanged(val country: Country?) : Event
     data class DistributorFilterChanged(val distributor: String?) : Event
   }

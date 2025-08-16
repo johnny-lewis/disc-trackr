@@ -5,6 +5,7 @@ import androidx.compose.ui.res.stringResource
 import dev.johnnylewis.disctrackr.R
 import dev.johnnylewis.disctrackr.domain.model.DiscFormat
 import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
+import kotlin.reflect.KClass
 
 @Composable
 fun DiscFormResult.DiscFormFormat.getName(): String =
@@ -20,4 +21,13 @@ fun DiscFormat.getName(): String =
     is DiscFormat.DVD -> stringResource(R.string.disc_format_dvd)
     is DiscFormat.BluRay -> stringResource(R.string.disc_format_bluray)
     DiscFormat.UHD -> stringResource(R.string.disc_format_uhd)
+  }
+
+@Composable
+fun KClass<out DiscFormat>.getName(): String =
+  when (simpleName) {
+    DiscFormat.DVD::class.simpleName -> stringResource(R.string.disc_format_dvd)
+    DiscFormat.BluRay::class.simpleName -> stringResource(R.string.disc_format_bluray)
+    DiscFormat.UHD::class.simpleName -> stringResource(R.string.disc_format_uhd)
+    else -> throw IllegalArgumentException("Unknown disc format: $simpleName")
   }
