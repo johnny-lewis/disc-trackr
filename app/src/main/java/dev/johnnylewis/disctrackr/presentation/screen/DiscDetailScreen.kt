@@ -5,6 +5,7 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
@@ -12,6 +13,7 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -147,7 +149,8 @@ private fun LoadedContent(
       DiscImage(
         modifier = Modifier
           .fillMaxHeight(0.4f)
-          .padding(top = 32.dp),
+          .padding(top = 32.dp)
+          .clip(RoundedCornerShape(6.dp)),
         url = disc.getImageUrl(),
         onDrawn = { palette = it.toBitmap().toPalette() },
       )
@@ -174,7 +177,37 @@ private fun DiscImage(
         SubcomposeAsyncImageContent()
         onDrawn(painter.result.image.asDrawable(resources))
       }
-      else -> {}
+      is AsyncImagePainter.State.Loading -> {
+        Box(
+          modifier = modifier
+            .aspectRatio(ratio = 0.7f)
+            .background(MaterialTheme.colorScheme.surfaceVariant),
+          contentAlignment = Alignment.Center,
+        ) {
+          CircularProgressIndicator(
+            modifier = Modifier
+              .size(20.dp),
+            color = MaterialTheme.colorScheme.primary,
+            strokeWidth = 2.dp,
+          )
+        }
+      }
+      else -> {
+        Box(
+          modifier = modifier
+            .aspectRatio(ratio = 0.7f)
+            .background(MaterialTheme.colorScheme.surfaceVariant),
+          contentAlignment = Alignment.Center,
+        ) {
+          Icon(
+            modifier = Modifier
+              .size(36.dp),
+            tint = MaterialTheme.colorScheme.onSurfaceVariant,
+            painter = painterResource(R.drawable.broken_image),
+            contentDescription = null,
+          )
+        }
+      }
     }
   }
 }
