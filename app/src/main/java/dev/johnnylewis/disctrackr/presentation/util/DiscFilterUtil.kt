@@ -5,9 +5,10 @@ import dev.johnnylewis.disctrackr.domain.model.DiscFormat
 import dev.johnnylewis.disctrackr.presentation.model.Country
 import dev.johnnylewis.disctrackr.presentation.model.DiscFilterState
 import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscScreenViewModel
+import kotlin.reflect.KClass
 
 fun DiscFilterState.update(discs: List<Disc>): DiscFilterState {
-  val formats = discs.map { it.format }.distinct().sortedBy { it::class.simpleName }
+  val formats = discs.map { it.format::class }.distinct().sortedBy { it.simpleName }
   val countries = discs
     .mapNotNull { disc ->
       disc.countryCode?.let { CountryUtil.getCountryFromCode(it) }
@@ -17,7 +18,7 @@ fun DiscFilterState.update(discs: List<Disc>): DiscFilterState {
 
   return copy(
     selection = selection.copy(
-      format = if (selection.format in formats) selection.format else null,
+      format = selection.format?.let { if (it in formats) it else null },
       country = if (selection.country in countries) selection.country else null,
       distributor = if (selection.distributor in distributors) selection.distributor else null,
     ),
@@ -29,7 +30,9 @@ fun DiscFilterState.update(discs: List<Disc>): DiscFilterState {
   )
 }
 
-fun DiscScreenViewModel.State.withFilter(format: DiscFormat?): DiscScreenViewModel.State =
+fun DiscScreenViewModel.State.withFilter(
+  format: KClass<out DiscFormat>?,
+): DiscScreenViewModel.State =
   copy(
     filterState = filterState.copy(
       selection = filterState.selection.copy(
