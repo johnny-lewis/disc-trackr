@@ -45,7 +45,18 @@ class DiscFormViewModelTest {
     }
 
   @Test
-  fun `Given year changed event triggered, when listening to disc form state flow, then it updates year`() =
+  fun `Given year changed event triggered with not only digits, when listening to disc form state flow, then it does nothing`() =
+    testScope.runTest {
+      viewModel.onEvent(DiscFormViewModel.Event.YearChanged("INVALID_2025"))
+      viewModel.state.test {
+        assertThat(awaitItem().year).isEmpty()
+
+        finishFlow()
+      }
+    }
+
+  @Test
+  fun `Given year changed event triggered with only digits, when listening to disc form state flow, then it updates year`() =
     testScope.runTest {
       viewModel.onEvent(DiscFormViewModel.Event.YearChanged("2025"))
       viewModel.state.test {
@@ -56,11 +67,33 @@ class DiscFormViewModelTest {
     }
 
   @Test
-  fun `Given bluray id changed event triggered, when listening to disc form state flow, then it updates bluray id`() =
+  fun `Given bluray id changed event triggered with only digits, when listening to disc form state flow, then it updates bluray id`() =
     testScope.runTest {
       viewModel.onEvent(DiscFormViewModel.Event.BluRayIdChanged("12345"))
       viewModel.state.test {
         assertThat(awaitItem().blurayId).isEqualTo("12345")
+
+        finishFlow()
+      }
+    }
+
+  @Test
+  fun `Given bluray id changed event triggered with blu-ray(dot)com url, when listening to disc form state flow, then it updates bluray id`() =
+    testScope.runTest {
+      viewModel.onEvent(DiscFormViewModel.Event.BluRayIdChanged("https://www.blu-ray.com/movies/disc-name/12345/"))
+      viewModel.state.test {
+        assertThat(awaitItem().blurayId).isEqualTo("12345")
+
+        finishFlow()
+      }
+    }
+
+  @Test
+  fun `Given bluray id changed event triggered with a string that's not digits only or blu-ray(dot)com url, when listening to disc form state flow, then it does nothing`() =
+    testScope.runTest {
+      viewModel.onEvent(DiscFormViewModel.Event.BluRayIdChanged("SOME_STRING"))
+      viewModel.state.test {
+        assertThat(awaitItem().blurayId).isEmpty()
 
         finishFlow()
       }

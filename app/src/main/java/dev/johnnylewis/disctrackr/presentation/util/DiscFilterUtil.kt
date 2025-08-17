@@ -30,7 +30,9 @@ fun DiscFilterState.update(discs: List<Disc>): DiscFilterState {
   )
 }
 
-fun DiscScreenViewModel.State.withFilter(format: KClass< out DiscFormat>?): DiscScreenViewModel.State =
+fun DiscScreenViewModel.State.withFilter(
+  format: KClass<out DiscFormat>?,
+): DiscScreenViewModel.State =
   copy(
     filterState = filterState.copy(
       selection = filterState.selection.copy(

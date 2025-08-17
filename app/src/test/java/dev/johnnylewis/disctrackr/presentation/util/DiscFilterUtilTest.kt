@@ -17,6 +17,7 @@ import junitparams.Parameters
 import junitparams.naming.TestCaseName
 import org.junit.Test
 import org.junit.runner.RunWith
+import kotlin.reflect.KClass
 
 @RunWith(JUnitParamsRunner::class)
 class DiscFilterUtilTest {
@@ -61,7 +62,7 @@ class DiscFilterUtilTest {
     )
 
     with(filterState.update(discs)) {
-      assertThat(options.formats.map { it::class.simpleName }).isEqualTo(listOf("BluRay", "DVD", "UHD"))
+      assertThat(options.formats.map { it.simpleName }).isEqualTo(listOf("BluRay", "DVD", "UHD"))
       assertThat(options.countries.map(Country::code)).isEqualTo(listOf("AU", "HK", "NZ"))
       assertThat(options.distributors).isEqualTo(listOf("DISTRIBUTOR 1", "DISTRIBUTOR 2", "DISTRIBUTOR 3"))
     }
@@ -71,7 +72,7 @@ class DiscFilterUtilTest {
   fun `Given filter state with selections, when updating the filter options with discs that don't include the selections, then filter state is updated and selections are reset`() {
     val filterState = buildDiscFilterState(
       selection = buildDiscFilterStateSelection(
-        format = buildDVDDiscFormat(),
+        format = DiscFormat.DVD::class,
         country = buildCountry(name = "New Zealand", code = "NZ"),
         distributor = "DISTRIBUTOR 1",
       ),
@@ -82,7 +83,7 @@ class DiscFilterUtilTest {
     )
 
     with(filterState.update(discs)) {
-      assertThat(options.formats.map { it::class.simpleName }).isEqualTo(listOf("BluRay", "UHD"))
+      assertThat(options.formats.map { it.simpleName }).isEqualTo(listOf("BluRay", "UHD"))
       assertThat(options.countries.map(Country::code)).isEqualTo(listOf("AU", "HK"))
       assertThat(options.distributors).isEqualTo(listOf("DISTRIBUTOR 2", "DISTRIBUTOR 3"))
       assertThat(selection.format).isNull()
@@ -95,7 +96,7 @@ class DiscFilterUtilTest {
   fun `Given filter state with selections, when updating the filter options with discs that include the selections, then filter state is updated and selections are not reset`() {
     val filterState = buildDiscFilterState(
       selection = buildDiscFilterStateSelection(
-        format = buildDVDDiscFormat(),
+        format = DiscFormat.DVD::class,
         country = buildCountry(name = "New Zealand", code = "NZ"),
         distributor = "DISTRIBUTOR 1",
       ),
@@ -107,10 +108,10 @@ class DiscFilterUtilTest {
     )
 
     with(filterState.update(discs)) {
-      assertThat(options.formats.map { it::class.simpleName }).isEqualTo(listOf("BluRay", "DVD", "UHD"))
+      assertThat(options.formats.map { it.simpleName }).isEqualTo(listOf("BluRay", "DVD", "UHD"))
       assertThat(options.countries.map(Country::code)).isEqualTo(listOf("AU", "HK", "NZ"))
       assertThat(options.distributors).isEqualTo(listOf("DISTRIBUTOR 1", "DISTRIBUTOR 2", "DISTRIBUTOR 3"))
-      assertThat(selection.format!!::class.simpleName).isEqualTo("DVD")
+      assertThat(selection.format?.simpleName).isEqualTo("DVD")
       assertThat(selection.country?.code).isEqualTo("NZ")
       assertThat(selection.distributor).isEqualTo("DISTRIBUTOR 1")
     }
@@ -121,7 +122,7 @@ class DiscFilterUtilTest {
   @TestCaseName("Given {0} passed into filter, when updating the format filter, then it should be updated")
   fun testWithFilterFormat(
     formatName: String,
-    format: DiscFormat?,
+    format: KClass<DiscFormat>?,
   ) {
     val state = buildDiscScreenViewModelState(
       filterState = buildDiscFilterState(
@@ -179,9 +180,9 @@ class DiscFilterUtilTest {
   @Suppress("unused")
   private fun withFilterFormatParameters(): Array<Any?> =
     arrayOf(
-      arrayOf("DVD", buildDVDDiscFormat()),
-      arrayOf("Blu-Ray", buildBluRayDiscFormat()),
-      arrayOf("4K UHD", buildUHDDiscFormat()),
+      arrayOf("DVD", DiscFormat.DVD::class),
+      arrayOf("Blu-Ray", DiscFormat.BluRay::class),
+      arrayOf("4K UHD", DiscFormat.UHD::class),
       arrayOf("null", null),
     )
 

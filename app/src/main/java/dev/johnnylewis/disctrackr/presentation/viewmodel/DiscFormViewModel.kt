@@ -1,6 +1,5 @@
 package dev.johnnylewis.disctrackr.presentation.viewmodel
 
-import androidx.core.text.isDigitsOnly
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -9,6 +8,7 @@ import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
 import dev.johnnylewis.disctrackr.presentation.util.CountryUtil
 import dev.johnnylewis.disctrackr.presentation.util.hasRegions
 import dev.johnnylewis.disctrackr.presentation.util.isAllRegions
+import dev.johnnylewis.disctrackr.presentation.util.isOnlyDigits
 import kotlinx.coroutines.FlowPreview
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -109,13 +109,13 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
   }
 
   private fun onYearChanged(year: String) {
-    if (year.isDigitsOnly()) {
+    if (year.isOnlyDigits()) {
       _state.value = _state.value.copy(year = year)
     }
   }
 
   private fun onBluRayIdChanged(id: String) {
-    if (id.isDigitsOnly()) {
+    if (id.isOnlyDigits()) {
       _state.value = _state.value.copy(blurayId = id)
     } else if (id.matches(BLU_RAY_URL_FORMAT)) {
       _state.value = _state.value.copy(blurayId = BLU_RAY_URL_ID.find(id)?.value ?: "")

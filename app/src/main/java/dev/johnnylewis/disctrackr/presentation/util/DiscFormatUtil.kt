@@ -16,14 +16,6 @@ fun DiscFormResult.DiscFormFormat.getName(): String =
   }
 
 @Composable
-fun DiscFormat.getName(): String =
-  when (this) {
-    is DiscFormat.DVD -> stringResource(R.string.disc_format_dvd)
-    is DiscFormat.BluRay -> stringResource(R.string.disc_format_bluray)
-    DiscFormat.UHD -> stringResource(R.string.disc_format_uhd)
-  }
-
-@Composable
 fun KClass<out DiscFormat>.getName(): String =
   when (simpleName) {
     DiscFormat.DVD::class.simpleName -> stringResource(R.string.disc_format_dvd)
