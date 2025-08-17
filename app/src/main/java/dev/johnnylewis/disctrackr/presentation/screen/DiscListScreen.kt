@@ -15,6 +15,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -110,7 +111,11 @@ private fun LoadedState(
     derivedStateOf { listState.firstVisibleItemIndex > 0 && listState.canScrollForward }
   }
 
-  Box(modifier = Modifier.fillMaxSize()) {
+  Box(
+    modifier = Modifier
+      .fillMaxSize()
+      .statusBarsPadding(),
+  ) {
     LazyColumn(
       modifier = Modifier
         .fillMaxSize()

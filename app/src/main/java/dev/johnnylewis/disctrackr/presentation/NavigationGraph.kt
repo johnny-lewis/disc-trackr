@@ -1,11 +1,26 @@
 package dev.johnnylewis.disctrackr.presentation
 
+import android.app.Activity
 import androidx.activity.ComponentActivity
 import androidx.activity.viewModels
+import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.WindowInsets
+import androidx.compose.foundation.layout.calculateEndPadding
+import androidx.compose.foundation.layout.calculateStartPadding
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.statusBars
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalDensity
+import androidx.compose.ui.platform.LocalLayoutDirection
+import androidx.compose.ui.platform.LocalView
+import androidx.compose.ui.zIndex
+import androidx.core.view.WindowCompat
 import androidx.lifecycle.coroutineScope
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
@@ -46,10 +61,17 @@ class NavigationGraph(
   @Composable
   fun Build(startDestination: Route) {
     navController = rememberNavController()
-    Scaffold { paddingValues ->
+    Scaffold(
+      topBar = { StatusBar() },
+    ) { paddingValues ->
+      val layoutDirection = LocalLayoutDirection.current
       NavHost(
         modifier = Modifier
-          .padding(paddingValues),
+          .padding(
+            bottom = paddingValues.calculateBottomPadding(),
+            start = paddingValues.calculateStartPadding(layoutDirection),
+            end = paddingValues.calculateEndPadding(layoutDirection),
+          ),
         navController = navController,
         startDestination = startDestination,
       ) {
@@ -68,6 +90,29 @@ class NavigationGraph(
         }
       }
     }
+  }
+
+  @Composable
+  private fun StatusBar() {
+    LocalView.current.let { view ->
+      if (!view.isInEditMode) {
+        val window = (view.context as Activity).window
+        val insetsController = WindowCompat.getInsetsController(window, view)
+        insetsController.isAppearanceLightStatusBars = false
+      }
+    }
+    val height = LocalDensity.current.let { density ->
+      WindowInsets.statusBars.getTop(density).let {
+        with(density) { it.toDp() }
+      }
+    }
+    Box(
+      modifier = Modifier
+        .fillMaxWidth()
+        .height(height)
+        .background(Color.Black.copy(alpha = 0.25f))
+        .zIndex(1f),
+    )
   }
 
   sealed interface Route {

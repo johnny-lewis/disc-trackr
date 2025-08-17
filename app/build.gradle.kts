@@ -144,6 +144,9 @@ dependencies {
   implementation(libs.coil)
   implementation(libs.coil.network)
 
+  // Color Palette
+  implementation(libs.palette)
+
   // Testing
   testImplementation(libs.junit)
   testImplementation(libs.androidx.junit)

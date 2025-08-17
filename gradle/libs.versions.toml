@@ -23,6 +23,7 @@ serialization = "1.9.0"
 room = "2.7.2"
 result = "2.1.0"
 coil = "3.3.0"
+palette = "1.0.0"
 
 [libraries]
 # ktlint
@@ -64,6 +65,9 @@ result-monad-coroutines = { group = "com.michael-bull.kotlin-result", name = "ko
 # Coil
 coil = { group = "io.coil-kt.coil3", name = "coil-compose", version.ref = "coil" }
 coil-network = { group = "io.coil-kt.coil3", name = "coil-network-okhttp", version.ref = "coil" }
+
+# Color Palette
+palette = { group = "androidx.palette", name = "palette-ktx", version.ref = "palette" }
 
 # Testing
 junit = { group = "junit", name = "junit", version.ref = "junit" }
