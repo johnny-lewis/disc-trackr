@@ -162,7 +162,7 @@ private fun DiscFormContent(
       modifier = Modifier
         .fillMaxWidth(),
       value = state.blurayId,
-      onValueChange = { onEvent(DiscFormViewModel.Event.BlurayIdChanged(it)) },
+      onValueChange = { onEvent(DiscFormViewModel.Event.BluRayIdChanged(it)) },
       label = { Text(stringResource(R.string.disc_screen_form_bluray_id)) },
       keyboardOptions = KeyboardOptions(
         keyboardType = KeyboardType.Number,
