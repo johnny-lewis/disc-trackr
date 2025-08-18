@@ -3,6 +3,7 @@ package dev.johnnylewis.disctrackr.presentation.screen
 import android.graphics.drawable.Drawable
 import androidx.compose.foundation.background
 import androidx.compose.foundation.isSystemInDarkTheme
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.aspectRatio
@@ -18,6 +19,7 @@ import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -33,6 +35,7 @@ import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import androidx.palette.graphics.Palette
@@ -43,8 +46,10 @@ import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
 import dev.johnnylewis.disctrackr.R
 import dev.johnnylewis.disctrackr.domain.model.Disc
+import dev.johnnylewis.disctrackr.presentation.util.CountryUtil
 import dev.johnnylewis.disctrackr.presentation.util.asComposeColor
 import dev.johnnylewis.disctrackr.presentation.util.darken
+import dev.johnnylewis.disctrackr.presentation.util.getFormatWithRegions
 import dev.johnnylewis.disctrackr.presentation.util.getImageUrl
 import dev.johnnylewis.disctrackr.presentation.util.toPalette
 import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscDetailScreenViewModel
@@ -144,15 +149,20 @@ private fun LoadedContent(
         .fillMaxSize()
         .statusBarsPadding()
         .padding(horizontal = 16.dp),
-      horizontalAlignment = Alignment.CenterHorizontally,
     ) {
       DiscImage(
         modifier = Modifier
+          .align(Alignment.CenterHorizontally)
           .fillMaxHeight(0.4f)
           .padding(top = 32.dp)
           .clip(RoundedCornerShape(6.dp)),
         url = disc.getImageUrl(),
         onDrawn = { palette = it.toBitmap().toPalette() },
+      )
+      InfoSection(
+        modifier = Modifier
+          .padding(top = 20.dp),
+        disc = disc,
       )
     }
   }
@@ -209,5 +219,62 @@ private fun DiscImage(
         }
       }
     }
+  }
+}
+
+@Composable
+private fun InfoSection(
+  modifier: Modifier = Modifier,
+  disc: Disc,
+) {
+  Column(
+    modifier = modifier,
+    verticalArrangement = Arrangement.spacedBy(12.dp),
+  ) {
+    InfoField(
+      title = stringResource(R.string.disc_detail_title),
+      value = disc.title,
+    )
+    if (!disc.distributor.isNullOrBlank()) {
+      InfoField(
+        title = stringResource(R.string.disc_detail_distributor),
+        value = disc.year?.let {
+          stringResource(R.string.disc_detail_distributor_with_year, disc.distributor, it)
+        } ?: disc.distributor,
+      )
+    }
+    CountryUtil.getCountryFromCode(disc.countryCode ?: "")?.let { country ->
+      InfoField(
+        title = stringResource(R.string.disc_detail_country),
+        value = "${country.name} ${CountryUtil.getFlag(country.code)}",
+      )
+    }
+    InfoField(
+      title = "Format",
+      value = disc.getFormatWithRegions(),
+    )
+  }
+}
+
+@Composable
+fun InfoField(
+  modifier: Modifier = Modifier,
+  title: String,
+  value: String,
+) {
+  Column(
+    modifier = modifier,
+    verticalArrangement = Arrangement.spacedBy(2.dp),
+  ) {
+    Text(
+      text = title,
+      style = MaterialTheme.typography.bodyMedium,
+      color = MaterialTheme.colorScheme.onBackground,
+    )
+    Text(
+      text = value,
+      style = MaterialTheme.typography.bodyLarge,
+      color = MaterialTheme.colorScheme.onBackground,
+    )
   }
 }

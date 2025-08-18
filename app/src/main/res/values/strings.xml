@@ -16,6 +16,8 @@
     <string name="disc_format_dvd">DVD</string>
     <string name="disc_format_bluray">Blu-ray</string>
     <string name="disc_format_uhd">4K UHD</string>
+    <string name="disc_format_region">%1$s: Region %2$s</string>
+    <string name="disc_format_region_all">All</string>
 
     <!-- Disc Form -->
     <string name="disc_screen_form_name">Name</string>
@@ -37,4 +39,10 @@
     <string name="disc_screen_form_year">Year of Distribution</string>
     <string name="disc_screen_form_bluray_id">Blu-ray.com ID</string>
     <string name="disc_screen_form_save">Save</string>
+
+    <!-- Disc Detail Screen -->
+    <string name="disc_detail_title">Title</string>
+    <string name="disc_detail_distributor">Distributor</string>
+    <string name="disc_detail_distributor_with_year">%1$s (%2$d)</string>
+    <string name="disc_detail_country">Country of Distribution</string>
 </resources>
