@@ -45,4 +45,6 @@
     <string name="disc_detail_distributor">Distributor</string>
     <string name="disc_detail_distributor_with_year">%1$s (%2$d)</string>
     <string name="disc_detail_country">Country of Distribution</string>
+    <string name="disc_detail_open_in_browser">Open in Browser</string>
+    <string name="disc_detail_edit">Edit</string>
 </resources>

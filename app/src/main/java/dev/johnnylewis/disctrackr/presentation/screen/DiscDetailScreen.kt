@@ -16,6 +16,8 @@ import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.DropdownMenu
+import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
@@ -31,11 +33,13 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.graphics.toArgb
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalResources
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
+import androidx.compose.ui.unit.DpOffset
 import androidx.compose.ui.unit.dp
 import androidx.core.graphics.drawable.toBitmap
 import androidx.palette.graphics.Palette
@@ -109,6 +113,8 @@ private fun LoadedContent(
     )
   }
 
+  var isMoreMenuVisible by remember { mutableStateOf(false) }
+
   Box(
     modifier = Modifier
       .fillMaxSize(),
@@ -129,21 +135,33 @@ private fun LoadedContent(
           ),
         ),
     )
-    IconButton(
+    CircleIconButton(
       modifier = Modifier
         .align(Alignment.TopStart)
         .statusBarsPadding()
-        .padding(top = 8.dp, start = 8.dp)
-        .clip(CircleShape)
-        .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.4f)),
+        .padding(top = 8.dp, start = 8.dp),
+      icon = painterResource(R.drawable.arrow_back),
       onClick = { onEvent(DiscDetailScreenViewModel.Event.BackPressed) },
+    )
+    Box(
+      modifier = Modifier
+        .align(Alignment.TopEnd)
+        .statusBarsPadding()
+        .padding(top = 8.dp, end = 8.dp),
     ) {
-      Icon(
-        tint = MaterialTheme.colorScheme.onBackground,
-        painter = painterResource(R.drawable.arrow_back),
-        contentDescription = null,
+      CircleIconButton(
+        icon = painterResource(R.drawable.more_vert),
+        onClick = { isMoreMenuVisible = true },
+      )
+      MoreMenu(
+        isVisible = isMoreMenuVisible,
+        offset = DpOffset(x = 0.dp, y = 0.dp),
+        disc = disc,
+        onEvent = onEvent,
+        onDismiss = { isMoreMenuVisible = false },
       )
     }
+
     Column(
       modifier = Modifier
         .fillMaxSize()
@@ -163,6 +181,50 @@ private fun LoadedContent(
         modifier = Modifier
           .padding(top = 20.dp),
         disc = disc,
+      )
+    }
+  }
+}
+
+@Composable
+private fun MoreMenu(
+  isVisible: Boolean,
+  offset: DpOffset,
+  disc: Disc,
+  onEvent: (DiscDetailScreenViewModel.Event) -> Unit,
+  onDismiss: () -> Unit,
+) {
+  DropdownMenu(
+    offset = offset,
+    expanded = isVisible,
+    onDismissRequest = onDismiss,
+  ) {
+    DropdownMenuItem(
+      text = { Text(stringResource(R.string.disc_detail_edit)) },
+      leadingIcon = {
+        Icon(
+          painter = painterResource(R.drawable.edit),
+          contentDescription = null,
+        )
+      },
+      onClick = {
+        onEvent(DiscDetailScreenViewModel.Event.Edit)
+        onDismiss()
+      },
+    )
+    if (!disc.blurayId.isNullOrBlank()) {
+      DropdownMenuItem(
+        text = { Text(stringResource(R.string.disc_detail_open_in_browser)) },
+        leadingIcon = {
+          Icon(
+            painter = painterResource(R.drawable.open_in_new),
+            contentDescription = null,
+          )
+        },
+        onClick = {
+          onEvent(DiscDetailScreenViewModel.Event.OpenInBrowser(disc.blurayId))
+          onDismiss()
+        },
       )
     }
   }
@@ -275,6 +337,26 @@ fun InfoField(
       text = value,
       style = MaterialTheme.typography.bodyLarge,
       color = MaterialTheme.colorScheme.onBackground,
+    )
+  }
+}
+
+@Composable
+private fun CircleIconButton(
+  modifier: Modifier = Modifier,
+  icon: Painter,
+  onClick: () -> Unit,
+) {
+  IconButton(
+    modifier = modifier
+      .clip(CircleShape)
+      .background(MaterialTheme.colorScheme.surface.copy(alpha = 0.2f)),
+    onClick = onClick,
+  ) {
+    Icon(
+      tint = MaterialTheme.colorScheme.onBackground,
+      painter = icon,
+      contentDescription = null,
     )
   }
 }

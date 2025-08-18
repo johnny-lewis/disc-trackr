@@ -6,6 +6,8 @@ import com.github.michaelbull.result.onFailure
 import com.github.michaelbull.result.onSuccess
 import dagger.hilt.android.lifecycle.HiltViewModel
 import dev.johnnylewis.disctrackr.domain.model.Disc
+import dev.johnnylewis.disctrackr.domain.repository.OpenWebLinkContract
+import dev.johnnylewis.disctrackr.domain.repository.OpenWebLinkContract.Companion.invoke
 import dev.johnnylewis.disctrackr.domain.usecase.GetDiscDetailsUseCase
 import dev.johnnylewis.disctrackr.presentation.NavigationGraph
 import kotlinx.coroutines.flow.MutableSharedFlow
@@ -18,6 +20,7 @@ import javax.inject.Inject
 class DiscDetailScreenViewModel @Inject constructor(
   private val navigationFlow: MutableSharedFlow<NavigationGraph.Route>,
   private val getDiscDetails: GetDiscDetailsUseCase,
+  private val openWebLink: OpenWebLinkContract,
 ) : ViewModel() {
   private val _state = MutableStateFlow<State>(State.Initial)
   val state = _state.asStateFlow()
@@ -43,6 +46,8 @@ class DiscDetailScreenViewModel @Inject constructor(
   fun onEvent(event: Event) {
     when (event) {
       Event.BackPressed -> onBackPressed()
+      Event.Edit -> onEdit()
+      is Event.OpenInBrowser -> onOpenInBrowser(event.bluRayId)
     }
   }
 
@@ -51,6 +56,12 @@ class DiscDetailScreenViewModel @Inject constructor(
       navigationFlow.emit(NavigationGraph.Route.Pop)
     }
   }
+
+  private fun onOpenInBrowser(bluRayId: String) {
+    openWebLink(url = BLURAY_URL.replace("{{id}}", bluRayId))
+  }
+
+  private fun onEdit() { }
 
   sealed interface State {
     data object Initial : State
@@ -61,5 +72,11 @@ class DiscDetailScreenViewModel @Inject constructor(
 
   sealed interface Event {
     data object BackPressed : Event
+    data object Edit : Event
+    data class OpenInBrowser(val bluRayId: String) : Event
+  }
+
+  private companion object {
+    const val BLURAY_URL = "https://www.blu-ray.com/movies/x-Blu-ray/{{id}}/"
   }
 }
