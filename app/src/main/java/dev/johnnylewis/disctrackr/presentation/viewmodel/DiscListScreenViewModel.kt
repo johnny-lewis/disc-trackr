@@ -90,7 +90,7 @@ class DiscListScreenViewModel @Inject constructor(
   private fun onDiscFormSubmitted(result: DiscFormResult) {
     onDiscFormExpandedChanged(isExpanded = false)
     viewModelScope.launch {
-      discRepository.addDisc(result.mapToDisc())
+      discRepository.upsertDisc(result.mapToDisc())
     }
   }
 

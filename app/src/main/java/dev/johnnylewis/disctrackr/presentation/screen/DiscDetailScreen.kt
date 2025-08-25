@@ -13,15 +13,19 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.statusBarsPadding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.Text
+import androidx.compose.material3.rememberModalBottomSheetState
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -50,6 +54,8 @@ import coil3.compose.SubcomposeAsyncImage
 import coil3.compose.SubcomposeAsyncImageContent
 import dev.johnnylewis.disctrackr.R
 import dev.johnnylewis.disctrackr.domain.model.Disc
+import dev.johnnylewis.disctrackr.presentation.component.DiscForm
+import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
 import dev.johnnylewis.disctrackr.presentation.util.CountryUtil
 import dev.johnnylewis.disctrackr.presentation.util.asComposeColor
 import dev.johnnylewis.disctrackr.presentation.util.darken
@@ -77,11 +83,26 @@ private fun DiscDetailScreenContent(
   when (state) {
     DiscDetailScreenViewModel.State.Initial ->
       InitialContent()
-    is DiscDetailScreenViewModel.State.Loaded ->
+    is DiscDetailScreenViewModel.State.Loaded -> {
       LoadedContent(
         disc = state.disc,
         onEvent = onEvent,
       )
+      BottomSheet(
+        isSheetExpanded = state.isDiscFormExpanded,
+        disc = state.disc,
+        shouldClearState = state.shouldClearDiscFormState,
+        onStateCleared = {
+          onEvent(DiscDetailScreenViewModel.Event.DiscFormStateCleared)
+        },
+        onDismiss = {
+          onEvent(DiscDetailScreenViewModel.Event.DiscFormExpandedChanged(isExpanded = false))
+        },
+        onSubmit = { result ->
+          onEvent(DiscDetailScreenViewModel.Event.DiscFormSubmitted(result))
+        },
+      )
+    }
   }
 }
 
@@ -208,7 +229,7 @@ private fun MoreMenu(
         )
       },
       onClick = {
-        onEvent(DiscDetailScreenViewModel.Event.Edit)
+        onEvent(DiscDetailScreenViewModel.Event.DiscFormExpandedChanged(isExpanded = true))
         onDismiss()
       },
     )
@@ -357,6 +378,39 @@ private fun CircleIconButton(
       tint = MaterialTheme.colorScheme.onBackground,
       painter = icon,
       contentDescription = null,
+    )
+  }
+}
+
+@OptIn(ExperimentalMaterial3Api::class)
+@Composable
+private fun BottomSheet(
+  isSheetExpanded: Boolean,
+  disc: Disc,
+  shouldClearState: Boolean,
+  onStateCleared: () -> Unit,
+  onDismiss: () -> Unit,
+  onSubmit: (DiscFormResult) -> Unit,
+) {
+  if (!isSheetExpanded) {
+    return
+  }
+  ModalBottomSheet(
+    modifier = Modifier
+      .systemBarsPadding(),
+    onDismissRequest = onDismiss,
+    sheetState = rememberModalBottomSheetState(
+      skipPartiallyExpanded = true,
+    ),
+  ) {
+    DiscForm(
+      modifier = Modifier
+        .fillMaxWidth()
+        .fillMaxHeight(0.95f),
+      editDisc = disc,
+      shouldClearState = shouldClearState,
+      onStateCleared = onStateCleared,
+      onSubmit = onSubmit,
     )
   }
 }

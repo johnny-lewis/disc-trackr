@@ -61,7 +61,7 @@ class DatabaseRepositoryTest {
         assertThat(awaitItem()).isEmpty()
 
         val disc = buildDisc()
-        repository.addDisc(disc)
+        repository.upsertDisc(disc)
         assertThat(awaitItem()).containsExactly(disc)
 
         finishFlow()
@@ -94,11 +94,11 @@ class DatabaseRepositoryTest {
         assertThat(awaitItem()).isEmpty()
 
         val discOld = buildDisc(id = 1, title = "DISC_1")
-        repository.addDisc(discOld)
+        repository.upsertDisc(discOld)
         assertThat(awaitItem()).containsExactly(discOld)
 
         val discNew = discOld.copy(title = "DISC_2")
-        repository.addDisc(discNew)
+        repository.upsertDisc(discNew)
         assertThat(awaitItem()).containsExactly(discNew)
 
         finishFlow()
@@ -138,7 +138,7 @@ class DatabaseRepositoryTest {
   @Test
   fun `Given database with no matching disc, when getting disc, then it returns flow of null`() =
     testScope.runTest {
-      repository.addDisc(buildDisc(id = 1))
+      repository.upsertDisc(buildDisc(id = 1))
       with(repository.getDisc(2)) {
         assertThat(isOk).isTrue()
         assertThat(unwrap()).isNull()
@@ -149,7 +149,7 @@ class DatabaseRepositoryTest {
   fun `Given database with matching disc, when getting disc, then it returns flow of that disc`() =
     testScope.runTest {
       val disc = buildDisc(id = 1)
-      repository.addDisc(disc)
+      repository.upsertDisc(disc)
       with(repository.getDisc(1)) {
         assertThat(isOk).isTrue()
         assertThat(unwrap()).isEqualTo(disc)

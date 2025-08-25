@@ -23,5 +23,5 @@ interface DiscDao {
   fun getAll(): Flow<List<DiscEntity>>
 
   @Query("SELECT * FROM $DISC_TABLE_NAME WHERE id = :id")
-  suspend fun getById(id: Int): DiscEntity?
+  fun getById(id: Int): Flow<DiscEntity?>
 }

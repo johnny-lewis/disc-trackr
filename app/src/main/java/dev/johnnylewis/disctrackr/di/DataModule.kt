@@ -10,7 +10,7 @@ import dev.johnnylewis.disctrackr.data.database.AppDatabase
 import dev.johnnylewis.disctrackr.data.repository.DatabaseRepository
 import dev.johnnylewis.disctrackr.data.repository.ExternalAppRepository
 import dev.johnnylewis.disctrackr.domain.repository.DatabaseRepositoryContract
-import dev.johnnylewis.disctrackr.domain.repository.OpenWebLinkContract
+import dev.johnnylewis.disctrackr.domain.repository.ExternalAppRepositoryContract
 import javax.inject.Singleton
 
 @Module
@@ -37,15 +37,8 @@ class DataModule {
   @Provides
   fun provideExternalAppRepository(
     @ApplicationContext context: Context,
-  ): ExternalAppRepository =
+  ): ExternalAppRepositoryContract =
     ExternalAppRepository(
       context = context,
     )
-
-  @Singleton
-  @Provides
-  fun provideOpenWebLinkContract(
-    externalAppRepository: ExternalAppRepository,
-  ): OpenWebLinkContract =
-    externalAppRepository
 }
