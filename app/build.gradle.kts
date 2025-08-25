@@ -90,6 +90,8 @@ kover {
             "*HiltModules*",
             "*_Factory",
             "*\$InstanceHolder",
+            "*_MembersInjector*",
+            "*Contract*",
             "dev.johnnylewis.disctrackr.BuildConfig",
             "dev.johnnylewis.disctrackr.MainApplication",
             "dev.johnnylewis.disctrackr.presentation.MainActivity",

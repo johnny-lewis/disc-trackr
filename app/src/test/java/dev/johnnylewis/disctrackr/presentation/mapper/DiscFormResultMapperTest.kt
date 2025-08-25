@@ -7,6 +7,7 @@ import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
 import junitparams.JUnitParamsRunner
 import junitparams.Parameters
 import junitparams.naming.TestCaseName
+import okhttp3.internal.format
 import org.junit.Test
 import org.junit.runner.RunWith
 
@@ -53,7 +54,7 @@ class DiscFormResultMapperTest {
   }
 
   @Test
-  fun `Given form result with uhd format, when mapping disc, then it maps`() {
+  fun `Given form result with uhd format, when mapping to disc, then it maps`() {
     val formResult = buildDiscFormResult(format = DiscFormResult.DiscFormFormat.UHD)
     with(formResult.mapToDisc()) {
       assertThat(id).isNull()
@@ -64,6 +65,13 @@ class DiscFormResultMapperTest {
       assertThat(distributor).isEqualTo(formResult.distributor)
       assertThat(year).isEqualTo(formResult.year.toInt())
       assertThat(blurayId).isEqualTo(formResult.blurayId)
+    }
+  }
+
+  @Test
+  fun `Given id provided, when mapping to disc, then it maps with id`() {
+    with(buildDiscFormResult().mapToDisc(id = 42)) {
+      assertThat(id).isEqualTo(42)
     }
   }
 
