@@ -52,9 +52,13 @@ class DiscDetailScreenViewModel @Inject constructor(
     when (event) {
       Event.BackPressed -> onBackPressed()
       is Event.OpenInBrowser -> onOpenInBrowser(event.bluRayId)
+      is Event.DiscSheetVisibilityChanged -> onDiscSheetVisibilityChanged(event.visibility)
+
       Event.DiscFormStateCleared -> onDiscFormStateCleared()
-      is Event.DiscFormExpandedChanged -> onDiscFormExpandedChanged(event.isExpanded)
       is Event.DiscFormSubmitted -> onDiscFormSubmitted(event.result)
+
+      is Event.DiscImageSelected -> onDiscImageSelected(event.url)
+      Event.DiscImageSelectStateCleared -> onDiscImageSelectStateCleared()
     }
   }
 
@@ -76,21 +80,46 @@ class DiscDetailScreenViewModel @Inject constructor(
     }
   }
 
-  private fun onDiscFormExpandedChanged(isExpanded: Boolean) {
+  private fun onDiscSheetVisibilityChanged(visibility: BottomSheetVisible) {
     (_state.value as? State.Loaded)?.let {
       _state.value = it.copy(
-        isDiscFormExpanded = isExpanded,
-        shouldClearDiscFormState = if (!isExpanded) true else it.shouldClearDiscFormState,
+        bottomSheetVisibility = visibility,
+        shouldClearDiscFormState = if (visibility != BottomSheetVisible.DiscForm) {
+          true
+        } else {
+          it.shouldClearDiscFormState
+        },
+        shouldClearImageSelectState = if (visibility != BottomSheetVisible.ImageSelect) {
+          true
+        } else {
+          it.shouldClearImageSelectState
+        },
       )
     }
   }
 
   private fun onDiscFormSubmitted(result: DiscFormResult) {
     (_state.value as? State.Loaded)?.let {
-      onDiscFormExpandedChanged(isExpanded = false)
+      onDiscSheetVisibilityChanged(visibility = BottomSheetVisible.None)
       viewModelScope.launch {
         addOrUpdateDisc(result.mapToDisc(id = it.disc.id))
       }
+    }
+  }
+
+  private fun onDiscImageSelected(url: String) {
+    (_state.value as? State.Loaded)?.let {
+      viewModelScope.launch {
+        addOrUpdateDisc(it.disc.copy(imageUrl = url))
+      }
+    }
+  }
+
+  private fun onDiscImageSelectStateCleared() {
+    (_state.value as? State.Loaded)?.let {
+      _state.value = it.copy(
+        shouldClearImageSelectState = false,
+      )
     }
   }
 
@@ -98,17 +127,26 @@ class DiscDetailScreenViewModel @Inject constructor(
     data object Initial : State
     data class Loaded(
       val disc: Disc,
-      val isDiscFormExpanded: Boolean = false,
+      val bottomSheetVisibility: BottomSheetVisible = BottomSheetVisible.None,
       val shouldClearDiscFormState: Boolean = false,
+      val shouldClearImageSelectState: Boolean = false,
     ) : State
   }
 
   sealed interface Event {
     data object BackPressed : Event
     data class OpenInBrowser(val bluRayId: String) : Event
+    data class DiscSheetVisibilityChanged(val visibility: BottomSheetVisible) : Event
+
     data object DiscFormStateCleared : Event
-    data class DiscFormExpandedChanged(val isExpanded: Boolean) : Event
     data class DiscFormSubmitted(val result: DiscFormResult) : Event
+
+    data class DiscImageSelected(val url: String) : Event
+    data object DiscImageSelectStateCleared : Event
+  }
+
+  enum class BottomSheetVisible {
+    None, DiscForm, ImageSelect
   }
 
   private companion object {

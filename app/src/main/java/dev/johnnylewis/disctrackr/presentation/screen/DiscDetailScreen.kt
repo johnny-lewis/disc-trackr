@@ -55,7 +55,7 @@ import coil3.compose.SubcomposeAsyncImageContent
 import dev.johnnylewis.disctrackr.R
 import dev.johnnylewis.disctrackr.domain.model.Disc
 import dev.johnnylewis.disctrackr.presentation.component.DiscForm
-import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
+import dev.johnnylewis.disctrackr.presentation.component.DiscImageSelect
 import dev.johnnylewis.disctrackr.presentation.util.CountryUtil
 import dev.johnnylewis.disctrackr.presentation.util.asComposeColor
 import dev.johnnylewis.disctrackr.presentation.util.darken
@@ -63,6 +63,8 @@ import dev.johnnylewis.disctrackr.presentation.util.getFormatWithRegions
 import dev.johnnylewis.disctrackr.presentation.util.getImageUrl
 import dev.johnnylewis.disctrackr.presentation.util.toPalette
 import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscDetailScreenViewModel
+
+private const val SHEET_HEIGHT_PERCENT: Float = 0.95f
 
 @Composable
 fun DiscDetailScreen(
@@ -88,19 +90,9 @@ private fun DiscDetailScreenContent(
         disc = state.disc,
         onEvent = onEvent,
       )
-      BottomSheet(
-        isSheetExpanded = state.isDiscFormExpanded,
-        disc = state.disc,
-        shouldClearState = state.shouldClearDiscFormState,
-        onStateCleared = {
-          onEvent(DiscDetailScreenViewModel.Event.DiscFormStateCleared)
-        },
-        onDismiss = {
-          onEvent(DiscDetailScreenViewModel.Event.DiscFormExpandedChanged(isExpanded = false))
-        },
-        onSubmit = { result ->
-          onEvent(DiscDetailScreenViewModel.Event.DiscFormSubmitted(result))
-        },
+      BottomSheetTest(
+        state = state,
+        onEvent = onEvent,
       )
     }
   }
@@ -229,7 +221,28 @@ private fun MoreMenu(
         )
       },
       onClick = {
-        onEvent(DiscDetailScreenViewModel.Event.DiscFormExpandedChanged(isExpanded = true))
+        onEvent(
+          DiscDetailScreenViewModel.Event.DiscSheetVisibilityChanged(
+            DiscDetailScreenViewModel.BottomSheetVisible.DiscForm,
+          ),
+        )
+        onDismiss()
+      },
+    )
+    DropdownMenuItem(
+      text = { Text(stringResource(R.string.disc_detail_update_image)) },
+      leadingIcon = {
+        Icon(
+          painter = painterResource(R.drawable.image),
+          contentDescription = null,
+        )
+      },
+      onClick = {
+        onEvent(
+          DiscDetailScreenViewModel.Event.DiscSheetVisibilityChanged(
+            DiscDetailScreenViewModel.BottomSheetVisible.ImageSelect,
+          ),
+        )
         onDismiss()
       },
     )
@@ -384,33 +397,56 @@ private fun CircleIconButton(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun BottomSheet(
-  isSheetExpanded: Boolean,
-  disc: Disc,
-  shouldClearState: Boolean,
-  onStateCleared: () -> Unit,
-  onDismiss: () -> Unit,
-  onSubmit: (DiscFormResult) -> Unit,
+private fun BottomSheetTest(
+  state: DiscDetailScreenViewModel.State.Loaded,
+  onEvent: (DiscDetailScreenViewModel.Event) -> Unit,
 ) {
-  if (!isSheetExpanded) {
+  if (state.bottomSheetVisibility == DiscDetailScreenViewModel.BottomSheetVisible.None) {
     return
   }
   ModalBottomSheet(
     modifier = Modifier
       .systemBarsPadding(),
-    onDismissRequest = onDismiss,
-    sheetState = rememberModalBottomSheetState(
-      skipPartiallyExpanded = true,
-    ),
+    onDismissRequest = {
+      onEvent(
+        DiscDetailScreenViewModel.Event.DiscSheetVisibilityChanged(
+          DiscDetailScreenViewModel.BottomSheetVisible.None,
+        ),
+      )
+    },
+    sheetState = rememberModalBottomSheetState(skipPartiallyExpanded = true),
   ) {
-    DiscForm(
-      modifier = Modifier
-        .fillMaxWidth()
-        .fillMaxHeight(0.95f),
-      editDisc = disc,
-      shouldClearState = shouldClearState,
-      onStateCleared = onStateCleared,
-      onSubmit = onSubmit,
-    )
+    when (state.bottomSheetVisibility) {
+      DiscDetailScreenViewModel.BottomSheetVisible.DiscForm -> {
+        DiscForm(
+          modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(SHEET_HEIGHT_PERCENT),
+          editDisc = state.disc,
+          shouldClearState = state.shouldClearDiscFormState,
+          onStateCleared = {
+            onEvent(DiscDetailScreenViewModel.Event.DiscFormStateCleared)
+          },
+          onSubmit = { result ->
+            onEvent(DiscDetailScreenViewModel.Event.DiscFormSubmitted(result))
+          },
+        )
+      }
+      DiscDetailScreenViewModel.BottomSheetVisible.ImageSelect -> {
+        DiscImageSelect(
+          modifier = Modifier
+            .fillMaxWidth()
+            .fillMaxHeight(SHEET_HEIGHT_PERCENT),
+          shouldClearState = state.shouldClearImageSelectState,
+          onStateCleared = {
+            onEvent(DiscDetailScreenViewModel.Event.DiscImageSelectStateCleared)
+          },
+          onSubmit = { url ->
+            onEvent(DiscDetailScreenViewModel.Event.DiscImageSelected(url))
+          },
+        )
+      }
+      else -> null
+    }
   }
 }
