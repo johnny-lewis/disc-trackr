@@ -16,7 +16,7 @@ class DiscImageSelectViewModel @Inject constructor() : ViewModel() {
     when (event) {
       Event.ClearState -> onClearState()
       is Event.ImageUrlTextValueChanged -> imageUrlTextValueChanged(event.text)
-      Event.SubmitImageUrl -> onSubmitImageUrl()
+      Event.CheckOrClearImageUrl -> onCheckOrClearImageUrl()
       Event.ImageUrlValid -> onImageValid()
     }
   }
@@ -28,32 +28,41 @@ class DiscImageSelectViewModel @Inject constructor() : ViewModel() {
   private fun imageUrlTextValueChanged(text: String) {
     _state.value = _state.value.copy(
       imageUrlTextValue = text,
-      isImageUrlTextValueValid = text.isValidUrl(),
+      imageState = if (text.isValidUrl()) ImageState.VALID else ImageState.INVALID,
     )
   }
 
-  private fun onSubmitImageUrl() {
-    _state.value = _state.value.copy(
-      submittedImageUrl = _state.value.imageUrlTextValue,
-      isImageValid = false,
-    )
+  private fun onCheckOrClearImageUrl() {
+    if (_state.value.imageState == ImageState.VALID) {
+      _state.value = _state.value.copy(
+        checkedImageUrl = _state.value.imageUrlTextValue,
+        imageState = ImageState.LOADING,
+      )
+    } else {
+      onClearState()
+    }
   }
 
   private fun onImageValid() {
-    _state.value = _state.value.copy(isImageValid = true)
+    if (_state.value.imageState == ImageState.LOADING) {
+      _state.value = _state.value.copy(imageState = ImageState.LOADED)
+    }
   }
 
   data class State(
     val imageUrlTextValue: String = "",
-    val isImageUrlTextValueValid: Boolean = false,
-    val submittedImageUrl: String = "",
-    val isImageValid: Boolean = false,
+    val checkedImageUrl: String = "",
+    val imageState: ImageState = ImageState.INVALID,
   )
 
   sealed interface Event {
     data object ClearState : Event
     data class ImageUrlTextValueChanged(val text: String) : Event
-    data object SubmitImageUrl : Event
+    data object CheckOrClearImageUrl : Event
     data object ImageUrlValid : Event
+  }
+
+  enum class ImageState {
+    INVALID, VALID, LOADING, LOADED
   }
 }

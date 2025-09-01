@@ -24,7 +24,10 @@ import androidx.compose.runtime.collectAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.painter.Painter
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalInspectionMode
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -65,7 +68,7 @@ fun DiscImageSelect(
 
 @Composable
 private fun DiscImageSelectContent(
-  modifier: Modifier,
+  modifier: Modifier = Modifier,
   state: DiscImageSelectViewModel.State,
   onEvent: (DiscImageSelectViewModel.Event) -> Unit,
   onSubmit: (String) -> Unit,
@@ -90,38 +93,19 @@ private fun DiscImageSelectContent(
         },
         label = { Text(text = stringResource(R.string.disc_image_select_text_label)) },
         singleLine = true,
+        enabled = state.imageState.isTextFieldEnabled(),
       )
-      IconButton(
-        modifier = Modifier
-          .size(56.dp)
-          .clip(RoundedCornerShape(6.dp))
-          .background(
-            color = if (state.isImageUrlTextValueValid) {
-              MaterialTheme.colorScheme.primary
-            } else {
-              ButtonDefaults.buttonColors().disabledContainerColor
-            },
-          ),
-        onClick = { onEvent(DiscImageSelectViewModel.Event.SubmitImageUrl) },
-        enabled = state.isImageUrlTextValueValid,
-      ) {
-        Icon(
-          tint = if (state.isImageUrlTextValueValid) {
-            MaterialTheme.colorScheme.onPrimary
-          } else {
-            ButtonDefaults.buttonColors().disabledContentColor
-          },
-          painter = painterResource(R.drawable.cloud_download),
-          contentDescription = null,
-        )
-      }
+      ImageCheckButton(
+        imageState = state.imageState,
+        onEvent = onEvent,
+      )
     }
     SubcomposeAsyncImage(
       modifier = Modifier
         .weight(1f)
         .fillMaxWidth()
         .clip(RoundedCornerShape(6.dp)),
-      model = state.submittedImageUrl,
+      model = state.checkedImageUrl,
       contentDescription = null,
       contentScale = ContentScale.FillHeight,
     ) {
@@ -152,20 +136,30 @@ private fun DiscImageSelectContent(
               .background(MaterialTheme.colorScheme.surfaceVariant),
             contentAlignment = Alignment.Center,
           ) {
-            Text(
-              modifier = Modifier
-                .padding(horizontal = 16.dp),
-              text = stringResource(
-                id = if (state.submittedImageUrl.isBlank()) {
-                  R.string.disc_image_select_initial_message
-                } else {
-                  R.string.disc_image_select_error_message
-                },
-              ),
-              textAlign = TextAlign.Center,
-              style = MaterialTheme.typography.bodyMedium,
-              color = MaterialTheme.colorScheme.onSurfaceVariant,
-            )
+            if (LocalInspectionMode.current && state.checkedImageUrl.isNotBlank()) {
+              Icon(
+                modifier = Modifier
+                  .size(56.dp),
+                tint = MaterialTheme.colorScheme.onSurfaceVariant,
+                painter = painterResource(R.drawable.image),
+                contentDescription = null,
+              )
+            } else {
+              Text(
+                modifier = Modifier
+                  .padding(horizontal = 16.dp),
+                text = stringResource(
+                  id = if (state.checkedImageUrl.isBlank()) {
+                    R.string.disc_image_select_initial_message
+                  } else {
+                    R.string.disc_image_select_error_message
+                  },
+                ),
+                textAlign = TextAlign.Center,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+              )
+            }
           }
         }
       }
@@ -175,8 +169,8 @@ private fun DiscImageSelectContent(
         .fillMaxWidth()
         .padding(bottom = 8.dp),
       shape = RoundedCornerShape(6.dp),
-      enabled = state.isImageValid,
-      onClick = { onSubmit(state.submittedImageUrl) },
+      enabled = state.imageState == DiscImageSelectViewModel.ImageState.LOADED,
+      onClick = { onSubmit(state.checkedImageUrl) },
     ) {
       Text(
         text = stringResource(R.string.disc_image_select_save),
@@ -189,9 +183,87 @@ private fun DiscImageSelectContent(
 }
 
 @Composable
+private fun ImageCheckButton(
+  imageState: DiscImageSelectViewModel.ImageState,
+  onEvent: (DiscImageSelectViewModel.Event) -> Unit,
+) {
+  imageState.getImageCheckButtonColors().let { (buttonColor, contentColor) ->
+    IconButton(
+      modifier = Modifier
+        .size(56.dp)
+        .clip(RoundedCornerShape(6.dp))
+        .background(buttonColor),
+      onClick = { onEvent(DiscImageSelectViewModel.Event.CheckOrClearImageUrl) },
+      enabled = imageState.isImageCheckButtonEnabled(),
+    ) {
+      if (imageState == DiscImageSelectViewModel.ImageState.LOADING) {
+        CircularProgressIndicator(
+          modifier = Modifier
+            .size(20.dp),
+          color = contentColor,
+          strokeWidth = 2.dp,
+        )
+      } else {
+        Icon(
+          tint = contentColor,
+          painter = imageState.getImageCheckButtonIcon(),
+          contentDescription = null,
+        )
+      }
+    }
+  }
+}
+
+private fun DiscImageSelectViewModel.ImageState.isTextFieldEnabled(): Boolean =
+  this == DiscImageSelectViewModel.ImageState.INVALID ||
+    this == DiscImageSelectViewModel.ImageState.VALID
+
+@Composable
+private fun DiscImageSelectViewModel.ImageState.getImageCheckButtonColors(): Pair<Color, Color> =
+  when (this) {
+    DiscImageSelectViewModel.ImageState.INVALID,
+    DiscImageSelectViewModel.ImageState.LOADING,
+    -> ButtonDefaults.buttonColors().disabledContainerColor to
+      ButtonDefaults.buttonColors().disabledContentColor
+    DiscImageSelectViewModel.ImageState.VALID,
+    DiscImageSelectViewModel.ImageState.LOADED,
+    -> MaterialTheme.colorScheme.primary to MaterialTheme.colorScheme.onPrimary
+  }
+
+@Composable
+private fun DiscImageSelectViewModel.ImageState.getImageCheckButtonIcon(): Painter =
+  if (this == DiscImageSelectViewModel.ImageState.LOADED) {
+    painterResource(R.drawable.close)
+  } else {
+    painterResource(R.drawable.cloud_download)
+  }
+
+private fun DiscImageSelectViewModel.ImageState.isImageCheckButtonEnabled(): Boolean =
+  this == DiscImageSelectViewModel.ImageState.VALID ||
+    this == DiscImageSelectViewModel.ImageState.LOADED
+
+@Composable
 @LightDarkPreview
-private fun DiscImageSelectPreview() = PreviewHelper.Screen {
-//  DiscImageSelectContent(
-//    onSubmit = {},
-//  )
+private fun DiscImageSelectPreview_Invalid() = PreviewHelper.Component {
+  DiscImageSelectContent(
+    state = DiscImageSelectViewModel.State(
+      imageState = DiscImageSelectViewModel.ImageState.INVALID,
+    ),
+    onSubmit = {},
+    onEvent = {},
+  )
+}
+
+@Composable
+@LightDarkPreview
+private fun DiscImageSelectPreview_Valid() = PreviewHelper.Component {
+  DiscImageSelectContent(
+    state = DiscImageSelectViewModel.State(
+      imageState = DiscImageSelectViewModel.ImageState.VALID,
+      imageUrlTextValue = "https://example.com/image.jpg",
+      checkedImageUrl = "https://example.com/image.jpg",
+    ),
+    onSubmit = {},
+    onEvent = {},
+  )
 }

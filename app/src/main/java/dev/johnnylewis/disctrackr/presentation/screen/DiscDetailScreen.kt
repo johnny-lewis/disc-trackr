@@ -90,7 +90,7 @@ private fun DiscDetailScreenContent(
         disc = state.disc,
         onEvent = onEvent,
       )
-      BottomSheetTest(
+      BottomSheet(
         state = state,
         onEvent = onEvent,
       )
@@ -222,7 +222,7 @@ private fun MoreMenu(
       },
       onClick = {
         onEvent(
-          DiscDetailScreenViewModel.Event.DiscSheetVisibilityChanged(
+          DiscDetailScreenViewModel.Event.BottomSheetVisibilityChanged(
             DiscDetailScreenViewModel.BottomSheetVisible.DiscForm,
           ),
         )
@@ -239,7 +239,7 @@ private fun MoreMenu(
       },
       onClick = {
         onEvent(
-          DiscDetailScreenViewModel.Event.DiscSheetVisibilityChanged(
+          DiscDetailScreenViewModel.Event.BottomSheetVisibilityChanged(
             DiscDetailScreenViewModel.BottomSheetVisible.ImageSelect,
           ),
         )
@@ -397,7 +397,7 @@ private fun CircleIconButton(
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun BottomSheetTest(
+private fun BottomSheet(
   state: DiscDetailScreenViewModel.State.Loaded,
   onEvent: (DiscDetailScreenViewModel.Event) -> Unit,
 ) {
@@ -409,7 +409,7 @@ private fun BottomSheetTest(
       .systemBarsPadding(),
     onDismissRequest = {
       onEvent(
-        DiscDetailScreenViewModel.Event.DiscSheetVisibilityChanged(
+        DiscDetailScreenViewModel.Event.BottomSheetVisibilityChanged(
           DiscDetailScreenViewModel.BottomSheetVisible.None,
         ),
       )

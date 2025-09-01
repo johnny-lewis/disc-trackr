@@ -37,22 +37,25 @@ class DiscDetailScreenViewModel @Inject constructor(
       .onSuccess { discFlow ->
         discFlow
           .onEach { disc ->
-            _state.emit(disc?.let { State.Loaded(disc = disc) } ?: State.Initial)
+            disc?.let {
+              _state.value = when (val stateValue = _state.value) {
+                State.Initial -> State.Loaded(disc = disc)
+                is State.Loaded -> stateValue.copy(disc = disc)
+              }
+            } ?: navigateBack()
           }
           .launchIn(viewModelScope)
       }
       .onFailure {
-        viewModelScope.launch {
-          navigationFlow.emit(NavigationGraph.Route.Pop)
-        }
+        navigateBack()
       }
   }
 
   fun onEvent(event: Event) {
     when (event) {
-      Event.BackPressed -> onBackPressed()
+      Event.BackPressed -> navigateBack()
       is Event.OpenInBrowser -> onOpenInBrowser(event.bluRayId)
-      is Event.DiscSheetVisibilityChanged -> onDiscSheetVisibilityChanged(event.visibility)
+      is Event.BottomSheetVisibilityChanged -> onBottomSheetVisibilityChanged(event.visibility)
 
       Event.DiscFormStateCleared -> onDiscFormStateCleared()
       is Event.DiscFormSubmitted -> onDiscFormSubmitted(event.result)
@@ -62,7 +65,7 @@ class DiscDetailScreenViewModel @Inject constructor(
     }
   }
 
-  private fun onBackPressed() {
+  private fun navigateBack() {
     viewModelScope.launch {
       navigationFlow.emit(NavigationGraph.Route.Pop)
     }
@@ -80,7 +83,7 @@ class DiscDetailScreenViewModel @Inject constructor(
     }
   }
 
-  private fun onDiscSheetVisibilityChanged(visibility: BottomSheetVisible) {
+  private fun onBottomSheetVisibilityChanged(visibility: BottomSheetVisible) {
     (_state.value as? State.Loaded)?.let {
       _state.value = it.copy(
         bottomSheetVisibility = visibility,
@@ -100,7 +103,7 @@ class DiscDetailScreenViewModel @Inject constructor(
 
   private fun onDiscFormSubmitted(result: DiscFormResult) {
     (_state.value as? State.Loaded)?.let {
-      onDiscSheetVisibilityChanged(visibility = BottomSheetVisible.None)
+      onBottomSheetVisibilityChanged(visibility = BottomSheetVisible.None)
       viewModelScope.launch {
         addOrUpdateDisc(result.mapToDisc(id = it.disc.id))
       }
@@ -109,6 +112,7 @@ class DiscDetailScreenViewModel @Inject constructor(
 
   private fun onDiscImageSelected(url: String) {
     (_state.value as? State.Loaded)?.let {
+      onBottomSheetVisibilityChanged(visibility = BottomSheetVisible.None)
       viewModelScope.launch {
         addOrUpdateDisc(it.disc.copy(imageUrl = url))
       }
@@ -136,7 +140,7 @@ class DiscDetailScreenViewModel @Inject constructor(
   sealed interface Event {
     data object BackPressed : Event
     data class OpenInBrowser(val bluRayId: String) : Event
-    data class DiscSheetVisibilityChanged(val visibility: BottomSheetVisible) : Event
+    data class BottomSheetVisibilityChanged(val visibility: BottomSheetVisible) : Event
 
     data object DiscFormStateCleared : Event
     data class DiscFormSubmitted(val result: DiscFormResult) : Event
