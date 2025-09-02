@@ -3,6 +3,8 @@ package dev.johnnylewis.disctrackr.presentation.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import dagger.hilt.android.lifecycle.HiltViewModel
+import dev.johnnylewis.disctrackr.domain.model.Disc
+import dev.johnnylewis.disctrackr.presentation.mapper.mapToDiscFormResult
 import dev.johnnylewis.disctrackr.presentation.model.Country
 import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
 import dev.johnnylewis.disctrackr.presentation.util.CountryUtil
@@ -23,6 +25,8 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
   private val _state = MutableStateFlow<State>(State())
   val state = _state.asStateFlow()
 
+  private var editDiscResult: DiscFormResult? = null
+
   private val countryFilter = MutableStateFlow("")
 
   init {
@@ -42,6 +46,7 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
 
   fun onEvent(event: Event) {
     when (event) {
+      is Event.SetEditDisc -> onSetEditDisc(event.disc)
       Event.ClearState -> onClearState()
       is Event.NameChanged -> onNameChanged(event.name)
       is Event.FormatChanged -> onFormatChanged(event.format)
@@ -56,8 +61,15 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
     }
   }
 
+  private fun onSetEditDisc(disc: Disc?) {
+    if (disc != null && editDiscResult == null) {
+      editDiscResult = disc.mapToDiscFormResult()
+      onClearState()
+    }
+  }
+
   private fun onClearState() {
-    _state.value = State()
+    _state.value = editDiscResult?.let { State.mapFromResult(it) } ?: State()
   }
 
   private fun onCountryFilterChanged(filter: String) {
@@ -146,9 +158,23 @@ class DiscFormViewModel @Inject constructor() : ViewModel() {
         year = year,
         blurayId = blurayId,
       )
+
+    companion object {
+      fun mapFromResult(result: DiscFormResult): State =
+        State(
+          selectedCountry = result.country,
+          name = result.title,
+          format = result.format,
+          regions = result.regions.toSet(),
+          distributor = result.distributor,
+          year = result.year,
+          blurayId = result.blurayId,
+        )
+    }
   }
 
   sealed interface Event {
+    data class SetEditDisc(val disc: Disc?) : Event
     data object ClearState : Event
     data class NameChanged(val name: String) : Event
     data class FormatChanged(val format: DiscFormResult.DiscFormFormat) : Event

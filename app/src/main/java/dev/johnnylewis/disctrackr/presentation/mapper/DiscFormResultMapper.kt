@@ -3,10 +3,11 @@ package dev.johnnylewis.disctrackr.presentation.mapper
 import dev.johnnylewis.disctrackr.domain.model.Disc
 import dev.johnnylewis.disctrackr.domain.model.DiscFormat
 import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
+import dev.johnnylewis.disctrackr.presentation.util.CountryUtil
 
-fun DiscFormResult.mapToDisc(): Disc =
+fun DiscFormResult.mapToDisc(id: Int? = null): Disc =
   Disc(
-    id = null,
+    id = id,
     title = title.trim(),
     imageUrl = null,
     format = format.mapToDiscFormat(regions = regions),
@@ -15,6 +16,19 @@ fun DiscFormResult.mapToDisc(): Disc =
     year = year.toIntOrNull(),
     blurayId = blurayId.ifBlank { null }?.trim(),
   )
+
+fun Disc.mapToDiscFormResult(): DiscFormResult =
+  format.toFormResult().let { (format, regions) ->
+    DiscFormResult(
+      title = title,
+      format = format,
+      regions = regions,
+      country = countryCode?.let { CountryUtil.getCountryFromCode(it) },
+      distributor = distributor ?: "",
+      year = year?.toString() ?: "",
+      blurayId = blurayId ?: "",
+    )
+  }
 
 private fun DiscFormResult.DiscFormFormat.mapToDiscFormat(
   regions: List<DiscFormResult.DiscFormRegion>,
@@ -66,4 +80,35 @@ private fun DiscFormResult.DiscFormRegion.mapToBluRayRegion(): DiscFormat.BluRay
     DiscFormResult.DiscFormRegion.C -> DiscFormat.BluRay.Region.C
     DiscFormResult.DiscFormRegion.ALL -> DiscFormat.BluRay.Region.ALL
     else -> null
+  }
+
+private fun DiscFormat.toFormResult():
+  Pair<DiscFormResult.DiscFormFormat, List<DiscFormResult.DiscFormRegion>> =
+  when (this) {
+    is DiscFormat.DVD -> DiscFormResult.DiscFormFormat.DVD to getFormRegions()
+    is DiscFormat.BluRay -> DiscFormResult.DiscFormFormat.BLU_RAY to getFormRegions()
+    DiscFormat.UHD -> DiscFormResult.DiscFormFormat.UHD to emptyList()
+  }
+
+private fun DiscFormat.DVD.getFormRegions(): List<DiscFormResult.DiscFormRegion> =
+  regions.map { region ->
+    when (region) {
+      DiscFormat.DVD.Region.ALL -> DiscFormResult.DiscFormRegion.ZERO
+      DiscFormat.DVD.Region.ONE -> DiscFormResult.DiscFormRegion.ONE
+      DiscFormat.DVD.Region.TWO -> DiscFormResult.DiscFormRegion.TWO
+      DiscFormat.DVD.Region.THREE -> DiscFormResult.DiscFormRegion.THREE
+      DiscFormat.DVD.Region.FOUR -> DiscFormResult.DiscFormRegion.FOUR
+      DiscFormat.DVD.Region.FIVE -> DiscFormResult.DiscFormRegion.FIVE
+      DiscFormat.DVD.Region.SIX -> DiscFormResult.DiscFormRegion.SIX
+    }
+  }
+
+private fun DiscFormat.BluRay.getFormRegions(): List<DiscFormResult.DiscFormRegion> =
+  regions.map { region ->
+    when (region) {
+      DiscFormat.BluRay.Region.ALL -> DiscFormResult.DiscFormRegion.ALL
+      DiscFormat.BluRay.Region.A -> DiscFormResult.DiscFormRegion.A
+      DiscFormat.BluRay.Region.B -> DiscFormResult.DiscFormRegion.B
+      DiscFormat.BluRay.Region.C -> DiscFormResult.DiscFormRegion.C
+    }
   }

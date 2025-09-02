@@ -21,4 +21,7 @@ interface DiscDao {
 
   @Query("SELECT * FROM $DISC_TABLE_NAME ORDER BY titleSort")
   fun getAll(): Flow<List<DiscEntity>>
+
+  @Query("SELECT * FROM $DISC_TABLE_NAME WHERE id = :id")
+  fun getById(id: Int): Flow<DiscEntity?>
 }

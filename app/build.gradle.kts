@@ -90,6 +90,8 @@ kover {
             "*HiltModules*",
             "*_Factory",
             "*\$InstanceHolder",
+            "*_MembersInjector*",
+            "*Contract*",
             "dev.johnnylewis.disctrackr.BuildConfig",
             "dev.johnnylewis.disctrackr.MainApplication",
             "dev.johnnylewis.disctrackr.presentation.MainActivity",
@@ -143,6 +145,9 @@ dependencies {
   // Coil
   implementation(libs.coil)
   implementation(libs.coil.network)
+
+  // Color Palette
+  implementation(libs.palette)
 
   // Testing
   testImplementation(libs.junit)

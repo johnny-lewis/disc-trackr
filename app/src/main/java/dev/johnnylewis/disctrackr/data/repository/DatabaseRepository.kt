@@ -22,7 +22,12 @@ class DatabaseRepository(
       .map(List<DiscEntity>::mapToDisc)
   }
 
-  override suspend fun addDisc(disc: Disc): Result<Unit, Throwable> = runCatching {
+  override fun getDisc(id: Int): Result<Flow<Disc?>, Throwable> = runCatching {
+    discDao.getById(id)
+      .map { it?.mapToDisc() }
+  }
+
+  override suspend fun upsertDisc(disc: Disc): Result<Unit, Throwable> = runCatching {
     discDao.insert(disc.mapToDiscEntity())
   }
 

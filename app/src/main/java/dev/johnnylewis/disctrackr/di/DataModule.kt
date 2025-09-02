@@ -8,7 +8,9 @@ import dagger.hilt.android.qualifiers.ApplicationContext
 import dagger.hilt.components.SingletonComponent
 import dev.johnnylewis.disctrackr.data.database.AppDatabase
 import dev.johnnylewis.disctrackr.data.repository.DatabaseRepository
+import dev.johnnylewis.disctrackr.data.repository.ExternalAppRepository
 import dev.johnnylewis.disctrackr.domain.repository.DatabaseRepositoryContract
+import dev.johnnylewis.disctrackr.domain.repository.ExternalAppRepositoryContract
 import javax.inject.Singleton
 
 @Module
@@ -29,5 +31,14 @@ class DataModule {
     DatabaseRepository(
       appDatabase = appDatabase,
       discDao = appDatabase.discDao(),
+    )
+
+  @Singleton
+  @Provides
+  fun provideExternalAppRepository(
+    @ApplicationContext context: Context,
+  ): ExternalAppRepositoryContract =
+    ExternalAppRepository(
+      context = context,
     )
 }

@@ -60,7 +60,7 @@ class DatabaseRepositoryTest {
         assertThat(awaitItem()).isEmpty()
 
         val disc = buildDisc()
-        repository.addDisc(disc)
+        repository.upsertDisc(disc)
         assertThat(awaitItem()).containsExactly(disc)
 
         finishFlow()
@@ -93,11 +93,11 @@ class DatabaseRepositoryTest {
         assertThat(awaitItem()).isEmpty()
 
         val discOld = buildDisc(id = 1, title = "DISC_1")
-        repository.addDisc(discOld)
+        repository.upsertDisc(discOld)
         assertThat(awaitItem()).containsExactly(discOld)
 
         val discNew = discOld.copy(title = "DISC_2")
-        repository.addDisc(discNew)
+        repository.upsertDisc(discNew)
         assertThat(awaitItem()).containsExactly(discNew)
 
         finishFlow()
@@ -120,6 +120,39 @@ class DatabaseRepositoryTest {
 
         repository.deleteDisc(id = 1)
         assertThat(awaitItem()).isEqualTo(discs.filterNot { it.id == 1 })
+
+        finishFlow()
+      }
+    }
+
+  @Test
+  fun `Given empty database, when getting disc, then it returns flow of null`() =
+    testScope.runTest {
+      repository.getDisc(1).okFlow().test {
+        assertThat(awaitItem()).isNull()
+
+        finishFlow()
+      }
+    }
+
+  @Test
+  fun `Given database with no matching disc, when getting disc, then it returns flow of null`() =
+    testScope.runTest {
+      repository.upsertDisc(buildDisc(id = 1))
+      repository.getDisc(2).okFlow().test {
+        assertThat(awaitItem()).isNull()
+
+        finishFlow()
+      }
+    }
+
+  @Test
+  fun `Given database with matching disc, when getting disc, then it returns flow of that disc`() =
+    testScope.runTest {
+      val disc = buildDisc(id = 1)
+      repository.upsertDisc(disc)
+      repository.getDisc(1).okFlow().test {
+        assertThat(awaitItem()).isEqualTo(disc)
 
         finishFlow()
       }

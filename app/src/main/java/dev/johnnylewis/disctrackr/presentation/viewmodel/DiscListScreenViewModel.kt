@@ -10,12 +10,14 @@ import dev.johnnylewis.disctrackr.domain.model.DiscFilter
 import dev.johnnylewis.disctrackr.domain.model.DiscFormat
 import dev.johnnylewis.disctrackr.domain.repository.DatabaseRepositoryContract
 import dev.johnnylewis.disctrackr.domain.usecase.GetDiscsUseCase
+import dev.johnnylewis.disctrackr.presentation.NavigationGraph
 import dev.johnnylewis.disctrackr.presentation.mapper.mapToDisc
 import dev.johnnylewis.disctrackr.presentation.model.Country
 import dev.johnnylewis.disctrackr.presentation.model.DiscFilterState
 import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
 import dev.johnnylewis.disctrackr.presentation.util.update
 import dev.johnnylewis.disctrackr.presentation.util.withFilter
+import kotlinx.coroutines.flow.MutableSharedFlow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
@@ -23,7 +25,8 @@ import javax.inject.Inject
 import kotlin.reflect.KClass
 
 @HiltViewModel
-class DiscScreenViewModel @Inject constructor(
+class DiscListScreenViewModel @Inject constructor(
+  private val navigationFlow: MutableSharedFlow<NavigationGraph.Route>,
   getDiscs: GetDiscsUseCase,
   private val discRepository: DatabaseRepositoryContract,
 ) : ViewModel() {
@@ -67,6 +70,7 @@ class DiscScreenViewModel @Inject constructor(
       is Event.FormatFilterChanged -> onFormatFilterChanged(event.format)
       is Event.CountryFilterChanged -> onCountryFilterChanged(event.country)
       is Event.DistributorFilterChanged -> onDistributorFilterChanged(event.distributor)
+      is Event.DiscPressed -> onDiscPressed(event.disc)
     }
   }
 
@@ -86,7 +90,7 @@ class DiscScreenViewModel @Inject constructor(
   private fun onDiscFormSubmitted(result: DiscFormResult) {
     onDiscFormExpandedChanged(isExpanded = false)
     viewModelScope.launch {
-      discRepository.addDisc(result.mapToDisc())
+      discRepository.upsertDisc(result.mapToDisc())
     }
   }
 
@@ -111,6 +115,14 @@ class DiscScreenViewModel @Inject constructor(
   private fun onDistributorFilterChanged(distributor: String?) {
     _state.value = _state.value.withFilter(distributor)
     _filterFlow.value = _filterFlow.value.copy(distributor = distributor)
+  }
+
+  private fun onDiscPressed(disc: Disc) {
+    disc.id?.let {
+      viewModelScope.launch {
+        navigationFlow.emit(NavigationGraph.Route.DiscDetail(disc.id))
+      }
+    }
   }
 
   private fun DiscFilter.hasFilters(): Boolean =
@@ -139,5 +151,6 @@ class DiscScreenViewModel @Inject constructor(
     data class FormatFilterChanged(val format: KClass<out DiscFormat>?) : Event
     data class CountryFilterChanged(val country: Country?) : Event
     data class DistributorFilterChanged(val distributor: String?) : Event
+    data class DiscPressed(val disc: Disc) : Event
   }
 }

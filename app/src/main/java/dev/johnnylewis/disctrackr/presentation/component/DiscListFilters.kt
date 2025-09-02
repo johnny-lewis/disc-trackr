@@ -41,13 +41,13 @@ import dev.johnnylewis.disctrackr.presentation.model.DiscFilterState
 import dev.johnnylewis.disctrackr.presentation.util.LightDarkPreview
 import dev.johnnylewis.disctrackr.presentation.util.PreviewHelper
 import dev.johnnylewis.disctrackr.presentation.util.getName
-import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscScreenViewModel
+import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscListScreenViewModel
 
 @Composable
 fun DiscListFilters(
   modifier: Modifier = Modifier,
   state: DiscFilterState,
-  onEvent: (DiscScreenViewModel.Event) -> Unit,
+  onEvent: (DiscListScreenViewModel.Event) -> Unit,
 ) {
   val scrollState = rememberScrollState()
   Box(
@@ -70,7 +70,7 @@ fun DiscListFilters(
         isSelected = state.selection.format != null,
         isExpanded = isFormatExpanded,
         onExpandedChanged = { isFormatExpanded = it },
-        onOptionSelected = { onEvent(DiscScreenViewModel.Event.FormatFilterChanged(it)) },
+        onOptionSelected = { onEvent(DiscListScreenViewModel.Event.FormatFilterChanged(it)) },
       )
       DiscFilterChip(
         label = state.selection.country?.name
@@ -79,7 +79,7 @@ fun DiscListFilters(
         isSelected = state.selection.country != null,
         isExpanded = isCountryExpanded,
         onExpandedChanged = { isCountryExpanded = it },
-        onOptionSelected = { onEvent(DiscScreenViewModel.Event.CountryFilterChanged(it)) },
+        onOptionSelected = { onEvent(DiscListScreenViewModel.Event.CountryFilterChanged(it)) },
       )
       DiscFilterChip(
         label = state.selection.distributor
@@ -88,7 +88,7 @@ fun DiscListFilters(
         isSelected = state.selection.distributor != null,
         isExpanded = isDistributorExpanded,
         onExpandedChanged = { isDistributorExpanded = it },
-        onOptionSelected = { onEvent(DiscScreenViewModel.Event.DistributorFilterChanged(it)) },
+        onOptionSelected = { onEvent(DiscListScreenViewModel.Event.DistributorFilterChanged(it)) },
       )
     }
     ScrollBlur(

@@ -44,6 +44,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import dev.johnnylewis.disctrackr.R
+import dev.johnnylewis.disctrackr.domain.model.Disc
 import dev.johnnylewis.disctrackr.presentation.model.Country
 import dev.johnnylewis.disctrackr.presentation.model.DiscFormResult
 import dev.johnnylewis.disctrackr.presentation.model.DropdownOption
@@ -58,10 +59,14 @@ import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscFormViewModel
 fun DiscForm(
   modifier: Modifier = Modifier,
   viewModel: DiscFormViewModel = viewModel(),
+  editDisc: Disc? = null,
   shouldClearState: Boolean,
   onStateCleared: () -> Unit,
   onSubmit: (DiscFormResult) -> Unit,
 ) {
+  LaunchedEffect(editDisc) {
+    viewModel.onEvent(DiscFormViewModel.Event.SetEditDisc(editDisc))
+  }
   LaunchedEffect(shouldClearState) {
     if (shouldClearState) {
       viewModel.onEvent(DiscFormViewModel.Event.ClearState)

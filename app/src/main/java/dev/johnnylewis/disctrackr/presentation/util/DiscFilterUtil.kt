@@ -4,7 +4,7 @@ import dev.johnnylewis.disctrackr.domain.model.Disc
 import dev.johnnylewis.disctrackr.domain.model.DiscFormat
 import dev.johnnylewis.disctrackr.presentation.model.Country
 import dev.johnnylewis.disctrackr.presentation.model.DiscFilterState
-import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscScreenViewModel
+import dev.johnnylewis.disctrackr.presentation.viewmodel.DiscListScreenViewModel
 import kotlin.reflect.KClass
 
 fun DiscFilterState.update(discs: List<Disc>): DiscFilterState {
@@ -30,9 +30,9 @@ fun DiscFilterState.update(discs: List<Disc>): DiscFilterState {
   )
 }
 
-fun DiscScreenViewModel.State.withFilter(
+fun DiscListScreenViewModel.State.withFilter(
   format: KClass<out DiscFormat>?,
-): DiscScreenViewModel.State =
+): DiscListScreenViewModel.State =
   copy(
     filterState = filterState.copy(
       selection = filterState.selection.copy(
@@ -41,7 +41,7 @@ fun DiscScreenViewModel.State.withFilter(
     ),
   )
 
-fun DiscScreenViewModel.State.withFilter(country: Country?): DiscScreenViewModel.State =
+fun DiscListScreenViewModel.State.withFilter(country: Country?): DiscListScreenViewModel.State =
   copy(
     filterState = filterState.copy(
       selection = filterState.selection.copy(
@@ -50,7 +50,7 @@ fun DiscScreenViewModel.State.withFilter(country: Country?): DiscScreenViewModel
     ),
   )
 
-fun DiscScreenViewModel.State.withFilter(distributor: String?): DiscScreenViewModel.State =
+fun DiscListScreenViewModel.State.withFilter(distributor: String?): DiscListScreenViewModel.State =
   copy(
     filterState = filterState.copy(
       selection = filterState.selection.copy(
